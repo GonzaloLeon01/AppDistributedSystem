@@ -2,45 +2,11 @@ const http = require('http');
 const url = require('url');
 const fs = require('fs');
 const path = require('path');
-const mqtt = require("mqtt");
-const client = mqtt.connect("mqtt://test.mosquitto.org");
 const PORT = 3000;
 
 const animalsFilePath = path.join(__dirname, 'animals.json');
 const checkpointsFilePath=path.join(__dirname, 'checkpoints.json');
 const adminFilePath = path.join(__dirname, 'admin.json');
-
-// Subscribir al tópico donde los Puntos de Control publicarán los datos
-client.on('connect', () => {
-    client.subscribe('controlpoints', (err) => {
-        if (!err) {
-            console.log('Suscrito a los Puntos de Control');
-        }
-    });
-});
-
-  // Llamada en el bloque de verificación MQTT
-  client.on('message', (topic, message) => {
-    try {
-      const data = JSON.parse(message.toString());
-  
-      if (typeof data.controlPointId === 'string' &&
-          typeof data.animalId === 'string' &&
-          typeof data.signalStrength === 'number') {
-        
-        console.log('Mensaje recibido y verificado:', data);
-  
-        // Guardar la ubicación del animal
-        saveAnimalLocation(data.controlPointId, data.animalId, data.signalStrength);
-  
-      } else {
-        console.error('Formato inválido en el mensaje MQTT recibido:', data);
-      }
-    } catch (err) {
-      console.error('Error al procesar el mensaje MQTT:', err.message);
-    }
-  });
-
 
 const app = http.createServer(async(req, res) => {
     const parsedUrl = url.parse(req.url, true); 
@@ -53,8 +19,7 @@ const app = http.createServer(async(req, res) => {
     } 
 
     if (req.url === '/API/animals' && method === 'GET') {
-
-        const animals = readAnimalsData();
+        const animals = await readData("ANIMAL");
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify(animals));
     }
@@ -68,20 +33,16 @@ const app = http.createServer(async(req, res) => {
 
         req.on('end', async() => {
             try {
-                
                 const newanimal = JSON.parse(body);
-
-                if (!newanimal.id || !newanimal.name || !newanimal.description) {
+                if (compruebaAnimal(newanimal)) {
                     res.statusCode = 400;
                     res.setHeader('Content-Type', 'application/json');
                     res.end(JSON.stringify({ error: 'Faltan algun campo' }));
                     return;
                 }
-                const animals = await leeCheckPoints();
-                
-                animals.data.push(newanimal);
-
-                escribeAnimales(animals,res);
+                const animals = await readData("ANIMAL");
+                animals.push(newanimal);
+                escribeData(animals,res,"ANIMAL");
               }
              catch (e) {
                 res.statusCode = 400;
@@ -90,20 +51,18 @@ const app = http.createServer(async(req, res) => {
               }
         });  
     }
-
     if (path.startsWith('/API/animals') && method === 'DELETE') {
       const id = parseInt(path.split('/').pop());
-      deleteAnimal(id,res);
+      deleteData(id,res,"ANIMAL");
     }
 
     if (path.startsWith('/API/animals') && method === 'PATCH') {
       const id = parseInt(path.split('/').pop());
-      modificarAnimal(id,res,req);
+      modificaData(id,res,req,"ANIMAL");
     }
 
     if (req.url === '/API/checkpoints' && method === 'GET') {
-      console.log("entra");
-      const checks = readCheckPointsData();
+      const checks = await readData("CHECK");
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(checks));
     }
@@ -116,35 +75,34 @@ const app = http.createServer(async(req, res) => {
 
         req.on('end', async() => {
             try {
-                const newCheckpoint = JSON.parse(body);
-                if(compruebaCheck(newCheckpoint)){
-                  res.statusCode = 400;
-                  res.setHeader('Content-Type', 'application/json');
-                  res.end(JSON.stringify({ error: 'Faltan algun campo' }));
-                  return;
-                }
-                const checkpoints = await leeCheckPoints();
-                
-                checkpoints.data.push(newCheckpoint);
+              const newCheckpoint = JSON.parse(body);
 
-                escribeCheckPoints(checkpoints,res);
+              if(compruebaCheck(newCheckpoint)){
+                res.statusCode = 400;
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify({ error: 'Faltan algun campo' }));
+                return;
               }
-             catch (e) {
+              const checkpoints = await readData("CHECK");
+              checkpoints.push(newCheckpoint);
+              escribeData(checkpoints,res,"CHECK");
+            }
+            catch (e) {
                 res.statusCode = 400;
                 res.setHeader('Content-Type', 'application/json');
                 res.end(JSON.stringify({ error: 'Error al procesar el JSON' }));
-              }
+            }
         });    
     }
 
     if (path.startsWith('/API/checkpoints')  && method === 'DELETE') {
       const id = parseInt(path.split('/').pop());
-      deleteCheckPoint(id,res);  
+      deleteData(id,res,"CHECK");  
     }
 
     if (path.startsWith('/API/checkpoints')  && method === 'PATCH') {
       const id = parseInt(path.split('/').pop());
-      modificarCheckpoint(id,res,req);  
+      modificaData(id,res,req,"CHECK");  
     }
 
     if (req.url === '/API/animals/position' && method === 'GET') {
@@ -164,16 +122,17 @@ const app = http.createServer(async(req, res) => {
 
         req.on('end', async() => {
             try {
-                const newAdmin = JSON.parse(body);
+              const newAdmin = JSON.parse(body);
 
-                if (!newAdmin.username || !newAdmin.password) {
-                    res.statusCode = 400;
-                    res.setHeader('Content-Type', 'application/json');
-                    res.end(JSON.stringify({ error: 'Faltan username o password' }));
-                    return;
-                }
-                  const admins = await leeAdmins();
-                  escribeAdmins(admins,res);
+              if (compruebaAdmin(newAdmin)) {
+                  res.statusCode = 400;
+                  res.setHeader('Content-Type', 'application/json');
+                  res.end(JSON.stringify({ error: 'Faltan username o password' }));
+                  return;
+              }
+              const admins = await readData("ADMIN");
+              admins.push(newAdmin);
+              escribeData(admins,res,"ADMIN");
             } catch (e) {
                 res.statusCode = 400;
                 res.setHeader('Content-Type', 'application/json');
@@ -187,170 +146,136 @@ app.listen(PORT, () => {
     console.log(`HTTP escuchando en el puerto ${PORT}`);
 });
 
-function addAnimal(animal) {
-  const animals = JSON.parse(fs.readFileSync(animalsFilePath));
-  animals.push(animal);
-  fs.writeFileSync(animalsFilePath, JSON.stringify(animals));
-}
 
-// Función para leer el archivo animals.json
-function readAnimalsData() {
-    try {
-      const data = fs.readFileSync('animals.json');
-      return JSON.parse(data);
-    } catch (err) {
-      console.error('Error al leer el archivo JSON:', err);
-      return {};
+function readData(args){
+  return new Promise((resolve, reject) => {
+    if(args==="CHECK"){
+      fs.readFile(checkpointsFilePath, (err, data) => {
+        if (err) {
+          reject(new Error('Error al leer checkpoints.json'));
+        } else {
+          const thing = JSON.parse(data);
+          resolve(thing.data);
+        }
+      });
     }
+    else if (args==="ANIMAL"){
+      fs.readFile(animalsFilePath, (err, data) => {
+        if (err) {
+          reject(new Error('Error al leer animals.json'));
+        } else {
+          const thing = JSON.parse(data);
+          resolve(thing.data);
+        }
+      });
+    }
+    else{
+      fs.readFile(adminFilePath, (err, data) => {
+        if (err) {
+          reject(new Error('Error al leer admin.json'));
+        } else {
+          const thing = JSON.parse(data);
+          resolve(thing.data);
+        }
+      }); 
+    }
+  });
 }
 
-function deleteAnimal(id1,res) {
-  const animals = JSON.parse(fs.readFileSync(animalsFilePath));
-
-  const animalsArray = animals.data;
-
-  const indexToDelete = animalsArray.findIndex(animal => animal.id === id1);  
-
-  if (indexToDelete !== -1) {
-    // Elimina el animal si se encuentra el índice
-    animalsArray.splice(indexToDelete, 1);
-    fs.writeFileSync(animalsFilePath, JSON.stringify({ data: animalsArray }));
-    // Respuesta de éxito
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end('¡Eliminado!\n');
-  } else {
-    // Manejo del error si no se encuentra el animal
-    res.writeHead(404, { 'Content-Type': 'text/plain' });
-    res.end('Error: Animal no encontrado\n');
+function escribeData(thing,res,args){
+  let path;
+  let name;
+  if(args==="CHECK"){
+    path=checkpointsFilePath;
+    name="Checkpoints";
   }
-}
-
-function modificarAnimal(id1,res,req) {
-  const animals = JSON.parse(fs.readFileSync(animalsFilePath));
-
-  const animalsArray = animals.data;
-
-  const indexToDelete = animalsArray.findIndex(animal => animal.id === id1);  
-  if (indexToDelete !== -1) {
-    let body = '';
-
-    req.on('data', chunk => {
-      body += chunk.toString(); 
-    });
-    req.on('end', async() => {
-      const newanimal = JSON.parse(body);
-      if (!newanimal.id || !newanimal.name || !newanimal.description) {
-        res.statusCode = 400;
-        res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify({ error: 'Faltan algun campo' }));
-        return;
-      }
-      // Elimina el animal si se encuentra el índice
-      animalsArray.splice(indexToDelete, 1);
-      animalsArray.push(newanimal)
-      fs.writeFileSync(animalsFilePath, JSON.stringify({ data: animalsArray }));
-
-      // Respuesta de éxito
-      res.writeHead(200, { 'Content-Type': 'text/plain' });
-      res.end('¡Remplazado!\n');
-    });
-  } else {
-    // Manejo del error si no se encuentra el animal
-    res.writeHead(404, { 'Content-Type': 'text/plain' });
-    res.end('Error: Animal no encontrado\n');
+  else if (args==="ANIMAL"){
+    path=animalsFilePath;
+    name="Animal";
   }
-}
-
-function escribeAnimales(animals,res){
-  fs.writeFile(animalsFilePath, JSON.stringify(animals, null, 2), (err) => {
+  else{
+    path=adminFilePath;
+    name="Admin";
+  }
+  fs.writeFile(path, JSON.stringify({data:thing}), (err) => {
     if (err) {
         res.statusCode = 500;
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify({ error: 'Error al guardar el archivo' }));
         return;
     }
-    // Responder con éxito
     res.statusCode = 201;
     res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify({ message: 'Animal creado exitosamente' })); 
+    res.end(JSON.stringify({ message: name+' creado exitosamente' })); 
   });
 }
 
-function leeAnimales() {
-  return new Promise((resolve, reject) => {
-    fs.readFile(animalsFilePath, (err, data) => {
-      if (err) {
-        reject(new Error('Error al leer animals.json'));
-      } else {
-        const animals = JSON.parse(data);
-        resolve(animals);
-      }
-    });
-  });
-}
 
-function readCheckPointsData(){
-  try {
-    const data = fs.readFileSync(checkpointsFilePath);
-    return JSON.parse(data);
-  } catch (err) {
-    console.error('Error al leer el archivo JSON:', err);
-    return {};
+function deleteData(id1,res,args){
+  let path;
+  let name;
+  let indexToDelete;
+  let Array;
+  if(args==="CHECK"){
+    let datos = JSON.parse(fs.readFileSync(checkpointsFilePath));
+    Array=datos.data;
+    path=checkpointsFilePath;
+    indexToDelete = Array.findIndex(check => check.id === id1);  
+    name="Checkpoints";
   }
-}
-
-function leeCheckPoints(){
-  return new Promise((resolve, reject) => {
-    fs.readFile(checkpointsFilePath, (err, data) => {
-      if (err) {
-        reject(new Error('Error al leer animals.json'));
-      } else {
-        const checks = JSON.parse(data);
-        resolve(checks);
-      }
-    });
-  });
-}
-
-function escribeCheckPoints(checkpoints,res){
-  fs.writeFile(checkpointsFilePath, JSON.stringify(checkpoints, null, 2), (err) => {
-    if (err) {
-        res.statusCode = 500;
-        res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify({ error: 'Error al guardar el archivo' }));
-        return;
-    }
-    // Responder con éxito
-    res.statusCode = 201;
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify({ message: 'Checkpoint creado exitosamente' })); 
-  });
-}
-
-
-function deleteCheckPoint(id1,res){
-  const checks = JSON.parse(fs.readFileSync(checkpointsFilePath));
-
-  const checksArray = checks.data;
-
-  const indexToDelete = checksArray.findIndex(check => check.id === id1);  
+  else if (args==="ANIMAL"){
+    let datos =  JSON.parse(fs.readFileSync(animalsFilePath));
+    Array=datos.data;
+    path=animalsFilePath;
+    indexToDelete = Array.findIndex(animal => animal.id === id1);    
+    name="Animal";
+  }
+  else{
+    let datos = JSON.parse(fs.readFileSync(adminFilePath));
+    Array=datos.data;
+    path=adminFilePath;
+    indexToDelete = Array.findIndex(admin => admin.username === id1);    
+    name="Admin";
+  }
 
   if (indexToDelete !== -1) {
-    checksArray.splice(indexToDelete, 1);
-    fs.writeFileSync(checkpointsFilePath, JSON.stringify({ data: checksArray }));
-    // Respuesta de éxito
+    Array.splice(indexToDelete, 1);
+    fs.writeFileSync(path, JSON.stringify({data:Array}));
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.end('¡Eliminado!\n');
   } else {
     res.writeHead(404, { 'Content-Type': 'text/plain' });
-    res.end('Error: CheckPoint no encontrado\n');
+    res.end('Error: '+name+' no encontrado\n');
   }
 }
 
-function modificarCheckpoint(id1,res,req){
-  const checks = JSON.parse(fs.readFileSync(checkpointsFilePath));
-  const checksArray = checks.data;
-  const indexToDelete = checksArray.findIndex(check => check.id === id1);
+function modificaData(id1,res,req,args){
+
+  let path;
+  let name;
+  let indexToDelete;
+  let Array;
+  if(args==="CHECK"){
+    let datos = JSON.parse(fs.readFileSync(checkpointsFilePath));
+    Array=datos.data;
+    path=checkpointsFilePath;
+    indexToDelete = Array.findIndex(check => check.id === id1);  
+    name="Checkpoints";
+  }
+  else if (args==="ANIMAL"){
+    let datos =  JSON.parse(fs.readFileSync(animalsFilePath));
+    Array=datos.data;
+    path=animalsFilePath;
+    indexToDelete = Array.findIndex(animal => animal.id === id1);    
+    name="Animal";
+  }
+  else{
+    let datos = JSON.parse(fs.readFileSync(adminFilePath));
+    Array=datos.data;
+    path=adminFilePath;
+    indexToDelete = Array.findIndex(admin => admin.username === id1);    
+    name="Admin";
+  }
 
   if (indexToDelete !== -1) {
     let body = '';
@@ -359,59 +284,51 @@ function modificarCheckpoint(id1,res,req){
       body += chunk.toString(); 
     });
     req.on('end', async() => {
-      const newcheck = JSON.parse(body);
-      if(compruebaCheck(newcheck)){
+      const newthing= JSON.parse(body);
+      if(args==="ANIMAL"){
+        flag=compruebaAnimal(newthing);
+      }
+      else if("CHECK"){
+        flag=compruebaCheck(newthing);
+      }
+      else{
+        flag=compruebaAdmin(newthing);
+      }
+      if(flag){
         res.statusCode = 400;
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify({ error: 'Faltan algun campo' }));
         return;
       }
-      checksArray.splice(indexToDelete, 1);
-      checksArray.push(newcheck)
-      fs.writeFileSync(checkpointsFilePath, JSON.stringify({ data: checksArray }));
+      Array.splice(indexToDelete, 1);
+      Array.push(newthing)
+      fs.writeFileSync(path, JSON.stringify({ data: Array }));
 
-      // Respuesta de éxito
       res.writeHead(200, { 'Content-Type': 'text/plain' });
       res.end('¡Remplazado!\n');
     });
   } else {
     res.writeHead(404, { 'Content-Type': 'text/plain' });
-    res.end('Error: CheckPoint no encontrado\n');
+    res.end('Error: '+name+' no encontrado\n');
   }  
 }
 
-function compruebaCheck(check){
-  if (!check.id || !check.lat || !check.long || !check.description) {
+function compruebaAdmin(admin){
+  if (!admin.username || !admin.password){
     return true;
   }
   return false;
 }
 
-
-function leeAdmins(){
-  return new Promise((resolve, reject) => {
-    fs.readFile(adminFilePath, (err, data) => {
-      if (err) {
-        reject(new Error('Error al leer animals.json'));
-      } else {
-        const admins = JSON.parse(data);
-        resolve(admins);
-      }
-    });
-  });
+function compruebaAnimal(animal){
+  if (!animal.id || !animal.name || !animal.description) {
+    return true;
+  }
+  return false;
 }
-
-function escribeAdmins(admins,res){
-  fs.writeFile(adminFilePath, JSON.stringify(admins, null, 2), (err) => {
-    if (err) {
-        res.statusCode = 500;
-        res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify({ error: 'Error al guardar el archivo' }));
-        return;
-    }
-    // Responder con éxito
-    res.statusCode = 201;
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify({ message: 'Admin creado exitosamente' })); 
-  });
+function compruebaCheck(check){
+  if (!check.id || !check.lat || !check.long || !check.description) {
+    return true;
+  }
+  return false;
 }
