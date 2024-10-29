@@ -19,7 +19,11 @@ client.on('connect', () => {
 client.on('message', (topic, message) => {
   try {
     const data = JSON.parse(message.toString());
-
+    console.log('Mensaje recibido en topic:', topic);
+    console.log('Checkpoint ID:', data.checkpointID);
+    data.animals.forEach(animal => {
+      console.log('Animal ID:', animal.id, 'RSSI:', animal.rssi);
+  });
     /*
     el mensaje recibido por el arduino es de formato
     Topic configurado en arduino: checkpoint/<uuid>
@@ -33,8 +37,19 @@ client.on('message', (topic, message) => {
       }
       se deberian guardar los datos del checkpoint en el server
     
+      en arduino enviar:
+        // Enviar datos cada cierto tiempo
+        StaticJsonDocument<200> doc;
+        doc["checkpointID"] = "your-uuid";  // Reemplaza con un UUID real
+        JsonArray animals = doc.createNestedArray("animals");
+        
+        // Agregar datos de animales
+        JsonObject animal1 = animals.createNestedObject();
+        animal1["id"] = "11:5e:e7:84:c4:f6";
+        animal1["rssi"] = -50;
 */
   } catch (err) {
     console.error('Error al procesar el mensaje MQTT:', err.message);
   }
+    
 });

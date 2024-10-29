@@ -1,5 +1,7 @@
-import { isNewAnimalValid } from '../validations/animalsValidations.js';
-import animalsService from '../services/AnimalsService.js';
+//import { isNewAnimalValid } from '../validations/animalsValidations.js';
+const { isNewAnimalValid } = require('../validations/animalsValidations.js');
+//import animalsService from '../services/AnimalsService.js';
+const { animalsService } = require('../services/AnimalsService.js');
 
 export class AnimalsController {
     animalsService = animalsService;

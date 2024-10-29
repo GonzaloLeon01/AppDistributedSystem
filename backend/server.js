@@ -1,9 +1,9 @@
 const http = require('http');
 const url = require('url');
 
-import { AnimalsController } from '../controllers/AnimalsController.js';
-import { CheckpointsController } from '../controllers/CheckpointsController.js';
-import { AuthController } from '../controllers/AuthController.js';
+import { AnimalsController } from './src/controllers/AnimalsController.js';
+import { CheckpointsController } from './src/controllers/CheckpointsController.js';
+import { AuthController } from './src/controllers/AuthController.js';
 
 const animalsController = AnimalsController();
 const checkpointsController = CheckpointsController();
@@ -117,7 +117,6 @@ const app = http.createServer(async (req, res) => {
         password:
       }
  
- 
       devuelve:
       {
         access token
@@ -157,3 +156,6 @@ const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`HTTP escuchando en el puerto ${PORT}`);
 });
+
+import { startMockedMqttPublishers } from '../test/Mock.js';
+startMockedMqttPublishers();
