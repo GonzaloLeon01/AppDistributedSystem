@@ -1,8 +1,10 @@
 import { isNewAnimalValid } from '../validations/animalsValidations.js';
+
 import animalsService from '../services/AnimalsService.js';
 
+
 export class AnimalsController {
-    animalsService = animalsService;
+    animalsService = animalsService;z
 
     getAllAnimals = async () => {
         try {

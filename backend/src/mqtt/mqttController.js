@@ -1,12 +1,14 @@
-const mqtt = require("mqtt");
+import mqtt from 'mqtt';
 
-const client = mqtt.connect("mqtt://test.mosquitto.org");
+const brokerUrl = process.env.MQTT_BROKER_URL || 'mqtt://localhost:1883';
+const client = mqtt.connect(brokerUrl);
 
 // Subscribir al tópico donde los Puntos de Control publicarán los datos
 //Suscripción a topic desde el servidor: checkpoint/<id>
 //Topic configurado en arduino: checkpoint/<uuid>
 
 client.on('connect', () => {
+
   client.subscribe('checkpoint', (err) => {
     if (!err) {
       console.log('Suscrito a los Puntos de Control');
@@ -19,7 +21,11 @@ client.on('connect', () => {
 client.on('message', (topic, message) => {
   try {
     const data = JSON.parse(message.toString());
-
+    console.log('Mensaje recibido en topic:', topic);
+    console.log('Checkpoint ID:', data.checkpointID);
+    data.animals.forEach(animal => {
+      console.log('Animal ID:', animal.id, 'RSSI:', animal.rssi);
+  });
     /*
     el mensaje recibido por el arduino es de formato
     Topic configurado en arduino: checkpoint/<uuid>
@@ -33,8 +39,19 @@ client.on('message', (topic, message) => {
       }
       se deberian guardar los datos del checkpoint en el server
     
+      en arduino enviar:
+        // Enviar datos cada cierto tiempo
+        StaticJsonDocument<200> doc;
+        doc["checkpointID"] = "your-uuid";  // Reemplaza con un UUID real
+        JsonArray animals = doc.createNestedArray("animals");
+        
+        // Agregar datos de animales
+        JsonObject animal1 = animals.createNestedObject();
+        animal1["id"] = "11:5e:e7:84:c4:f6";
+        animal1["rssi"] = -50;
 */
   } catch (err) {
     console.error('Error al procesar el mensaje MQTT:', err.message);
   }
+    
 });
