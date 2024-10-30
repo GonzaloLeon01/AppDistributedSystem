@@ -2,6 +2,7 @@
 import http from 'http';
 //const url = require('url');
 import url from 'url';
+import 'dotenv/config'
 import './src/mqtt/mqttController.js';
 import { AnimalsController } from './src/controllers/AnimalsController.js';
 import { CheckpointsController } from './src/controllers/CheckpointsController.js';
@@ -10,7 +11,6 @@ import { AuthController } from './src/controllers/AuthController.js';
 const animalsController = new AnimalsController();
 const checkpointsController = new CheckpointsController();
 const authController = new AuthController();
-
 
 const app = http.createServer(async (req, res) => {
   const parsedUrl = url.parse(req.url, true); // Analiza la URL y extrae los parámetros de consulta
@@ -38,6 +38,7 @@ const app = http.createServer(async (req, res) => {
 
     res.writeHead(result.status, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(result.data || { message: result.error }));
+    
   }
   else if (req.method === 'GET' && parsedUrl.pathname === `/api/animals/position`) {
     /* logica para obtener la posicion de los animales
@@ -49,6 +50,7 @@ const app = http.createServer(async (req, res) => {
   
         ]
     */
+
   }
   else if (req.method === 'DELETE' && parsedUrl.pathname === `/api/animals/id`) {
     //logica para eliminar animal por id
@@ -158,6 +160,7 @@ const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`HTTP escuchando en el puerto ${PORT}`);
 });
-import { startMockedMqttPublishers } from './test/Mock.mjs';
-
+import { startMockedMqttPublishers } from './test/testMqtt.mjs';
+import { checkServer } from './test/testHttp.js';
 startMockedMqttPublishers();
+checkServer();

@@ -1,7 +1,10 @@
 import mqtt from 'mqtt';
+import axios from 'axios';
 
 const brokerUrl = process.env.MQTT_BROKER_URL || 'mqtt://localhost:1883';
 const client = mqtt.connect(brokerUrl);
+// URL de tu servidor HTTP
+const httpServerUrl = 'http://localhost:3000/api/animals'; // Cambia esto según tu servidor HTTP
 
 // Subscribir al tópico donde los Puntos de Control publicarán los datos
 //Suscripción a topic desde el servidor: checkpoint/<id>
