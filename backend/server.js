@@ -1,13 +1,15 @@
-const http = require('http');
-const url = require('url');
-
+//const http = require('http');
+import http from 'http';
+//const url = require('url');
+import url from 'url';
+import './src/mqtt/mqttController.js';
 import { AnimalsController } from './src/controllers/AnimalsController.js';
 import { CheckpointsController } from './src/controllers/CheckpointsController.js';
 import { AuthController } from './src/controllers/AuthController.js';
 
-const animalsController = AnimalsController();
-const checkpointsController = CheckpointsController();
-const authController = AuthController();
+const animalsController = new AnimalsController();
+const checkpointsController = new CheckpointsController();
+const authController = new AuthController();
 
 
 const app = http.createServer(async (req, res) => {
@@ -156,6 +158,6 @@ const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`HTTP escuchando en el puerto ${PORT}`);
 });
+import { startMockedMqttPublishers } from './test/Mock.mjs';
 
-import { startMockedMqttPublishers } from '../test/Mock.js';
 startMockedMqttPublishers();

@@ -1,4 +1,4 @@
-import { isNewcheckpointValid } from '../validations/checkpointsValidations.js';
+import { isNewCheckpointValid } from '../validations/checkpointsValidations.js';
 import checkpointsService from '../services/CheckpointsService.js';
 
 export class CheckpointsController {
@@ -14,7 +14,7 @@ export class CheckpointsController {
     }
     createCheckpoint = async (newCheckpoint) => {
         try {
-            if (!isNewcheckpointValid(newCheckpoint)) {
+            if (!isNewCheckpointValid(newCheckpoint)) {
                 return { status: 400, error: "Invalid checkpoint" };
             }
             const createdCheckpoint = await this.animalsService.createCheckpoint(newCheckpoint);

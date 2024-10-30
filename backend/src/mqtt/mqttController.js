@@ -1,12 +1,14 @@
-const mqtt = require("mqtt");
+import mqtt from 'mqtt';
 
-const client = mqtt.connect("mqtt://test.mosquitto.org");
+const brokerUrl = process.env.MQTT_BROKER_URL || 'mqtt://localhost:1883';
+const client = mqtt.connect(brokerUrl);
 
 // Subscribir al tópico donde los Puntos de Control publicarán los datos
 //Suscripción a topic desde el servidor: checkpoint/<id>
 //Topic configurado en arduino: checkpoint/<uuid>
 
 client.on('connect', () => {
+
   client.subscribe('checkpoint', (err) => {
     if (!err) {
       console.log('Suscrito a los Puntos de Control');

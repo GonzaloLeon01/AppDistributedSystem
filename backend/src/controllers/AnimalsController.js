@@ -4,7 +4,7 @@ const { isNewAnimalValid } = require('../validations/animalsValidations.js');
 const { animalsService } = require('../services/AnimalsService.js');
 
 export class AnimalsController {
-    animalsService = animalsService;
+    animalsService = animalsService;z
 
     getAllAnimals = async () => {
         try {

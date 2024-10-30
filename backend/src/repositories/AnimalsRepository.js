@@ -17,5 +17,5 @@ class AnimalsRepository {
 
 }
 
-const animalsRpository = new AnimalsRpository();
+const animalsRpository = new AnimalsRepository();
 export default animalsRpository
