@@ -1,7 +1,7 @@
 export const isNewAnimalValid = (newAnimal) => {
     return !(
         !newAnimal ||
-        typeof newAnimal !== 'object' || 
+        typeof newAnimal !== 'object' ||
         !newAnimal.name ||
         !typeof newAnimal.name === 'string' ||
         !newAnimal.description ||

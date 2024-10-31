@@ -25,7 +25,9 @@ const app = http.createServer(async (req, res) => {
   else if (req.method === 'POST' && parsedUrl.pathname === `/api/animals`) { //aca seria para poder agregar un animal
     let body = '';
     req.on('data', chunk => { body += chunk; });
+
     req.on('end', async () => {
+      console.log(body);
       const newAnimal = JSON.parse(body);
       const result = await animalsController.createAnimal(newAnimal);
 
