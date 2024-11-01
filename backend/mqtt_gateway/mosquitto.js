@@ -1,39 +1,222 @@
 import mqtt from "mqtt";
-
+const fs = require("fs");
 const express = require("express");
 const app = express();
 const port = 3000;
-const INTENSIDAD_UMBRAL=-30
+const INTENSIDAD_UMBRAL = -30;
 //const mqttClient = connect("mqtt://localhost:1883");
 const mqttClient = mqtt.connect(process?.env?.MQTT_BROKER_URL);
 
 const topico_checkpoints = "controlpoints";
-const archivo_datos="datos.json"
-//Estructura para almacenrar puntos de control
-const puntosDeControl = new Map()
-// Estructura para almacenar vacas
-const animales = new Map()
+const archivo_datos = "datos.json";
+/**
+ * Estructura para almacenar puntos de control
+ * Se almacena solo informacion para persistir, es decir datos relevantes del punto de control
+ */
 
-const datos_almacenados={
+const puntosDeControl = new Map();
+/**
+ * Estructura para almacenar animales
+ * Se almacena solo informacion para persistir, es decir datos relevantes de cada animal
+ */
+const animales = new Map();
+
+/**
+ * Estructura de datos para almacenar todo junto
+ */
+const datos_almacenados = {
   puntosDeControl: puntosDeControl,
-  animales: animales
-}
+  animales: animales,
+};
+/***
+ * Seguimiento dinamico es una estructura de datos que almacena de la forma
+ * Punto de control1
+ *    -Animal1
+ *    -Animal2
+ *    -Animal3
+ *
+ * * Punto de control2
+ *    -Animal4
+ *    -Animal5
+ */
+seguimientoDinamico = new Map();
 
-seguimientoDinamico= new Map()
+const serverHttp = http.createServer((req, res) => {
+  //Con http
+  if (req.method === "GET" && req.url === "/checkpoints") {
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify(seguimientoDinamico));
+    return;
+  }
+  if (req.method === "POST") {
+    if (req.url === "/checkpoints") {
+      let body = "";
+      // Escuchar los datos entrantes en el cuerpo de la solicitud
+      req.on("data", (chunk) => {
+        body += chunk;
+      });
+      req.on("end", () => {
+        try {
+          const data = JSON.parse(body); // Convertir el JSON a un objeto
+          // Aquí puedes manipular o agregar datos a `seguimientoDinamico`
+          postCheckpoint(data);
 
+          res.writeHead(201, { "Content-Type": "application/json" });
+          res.end(
+            JSON.stringify({
+              message: "Checkpoint agregado",
+              data: seguimientoDinamico,
+            })
+          );
+        } catch (error) {
+          res.writeHead(400, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ error: "JSON inválido" }));
+        }
+      });
+      return;
+    }
+    if (req.url === "/animals") {
+      let body = "";
+      // Escuchar los datos entrantes en el cuerpo de la solicitud
+      req.on("data", (chunk) => {
+        body += chunk;
+      });
+      req.on("end", () => {
+        try {
+          const data = JSON.parse(body); // Convertir el JSON a un objeto
+          // Aquí puedes manipular o agregar datos a `seguimientoDinamico`
+          postAnimal(data);
 
+          res.writeHead(201, { "Content-Type": "application/json" });
+          res.end(
+            JSON.stringify({
+              message: "Checkpoint agregado",
+              data: seguimientoDinamico,
+            })
+          );
+        } catch (error) {
+          res.writeHead(400, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ error: "JSON inválido" }));
+        }
+      });
+      return;
+    }
+  }
+  if (req.method === "PUT") {
+    if (req.url === "/checkpoints") {
+      let body = "";
+      // Escuchar los datos entrantes en el cuerpo de la solicitud
+      req.on("data", (chunk) => {
+        body += chunk;
+      });
+      req.on("end", () => {
+        try {
+          const data = JSON.parse(body); // Convertir el JSON a un objeto
+          // Aquí puedes manipular o agregar datos a `seguimientoDinamico`
+          putCheckpoint(data);
 
-app.get("/checkpoints", (req, res) => {
-  if 
+          res.writeHead(201, { "Content-Type": "application/json" });
+          res.end(
+            JSON.stringify({
+              message: "Checkpoint agregado",
+              data: seguimientoDinamico,
+            })
+          );
+        } catch (error) {
+          res.writeHead(400, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ error: "JSON inválido" }));
+        }
+      });
+      return;
+    }
+    if (req.url === "/animals") {
+      let body = "";
+      // Escuchar los datos entrantes en el cuerpo de la solicitud
+      req.on("data", (chunk) => {
+        body += chunk;
+      });
+      req.on("end", () => {
+        try {
+          const data = JSON.parse(body); // Convertir el JSON a un objeto
+          // Aquí puedes manipular o agregar datos a `seguimientoDinamico`
+          putAnimal(data);
 
-  res.json({
-  });
+          res.writeHead(201, { "Content-Type": "application/json" });
+          res.end(
+            JSON.stringify({
+              message: "Checkpoint agregado",
+              data: seguimientoDinamico,
+            })
+          );
+        } catch (error) {
+          res.writeHead(400, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ error: "JSON inválido" }));
+        }
+      });
+      return;
+    }
+  }
+  if (req.method === "DELETE") {
+    if (req.url === "/checkpoints") {
+      let body = "";
+      // Escuchar los datos entrantes en el cuerpo de la solicitud
+      req.on("data", (chunk) => {
+        body += chunk;
+      });
+      req.on("end", () => {
+        try {
+          const data = JSON.parse(body); // Convertir el JSON a un objeto
+          // Aquí puedes manipular o agregar datos a `seguimientoDinamico`
+          deleteCheckpoint(data);
+
+          res.writeHead(201, { "Content-Type": "application/json" });
+          res.end(
+            JSON.stringify({
+              message: "Checkpoint agregado",
+              data: seguimientoDinamico,
+            })
+          );
+        } catch (error) {
+          res.writeHead(400, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ error: "JSON inválido" }));
+        }
+      });
+      return;
+    }
+    if (req.url === "/animals") {
+      let body = "";
+      // Escuchar los datos entrantes en el cuerpo de la solicitud
+      req.on("data", (chunk) => {
+        body += chunk;
+      });
+      req.on("end", () => {
+        try {
+          const data = JSON.parse(body); // Convertir el JSON a un objeto
+          // Aquí puedes manipular o agregar datos a `seguimientoDinamico`
+          deleteAnimal(data);
+
+          res.writeHead(201, { "Content-Type": "application/json" });
+          res.end(
+            JSON.stringify({
+              message: "Checkpoint agregado",
+              data: seguimientoDinamico,
+            })
+          );
+        } catch (error) {
+          res.writeHead(400, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ error: "JSON inválido" }));
+        }
+      });
+      return;
+    }
+  }
+  res.writeHead(404, { "Content-Type": "text/plain" });
+  res.end("Flaco, hiciste todo mal ¿Cómo hiciste?");
 });
 
-app.listen(port, () => {
+serverHttp.listen(PORT, () => {
   console.log(`Example app listening on port ${port}`);
 });
-
 
 /*
 Post para agregar puntos de control
@@ -45,131 +228,187 @@ Delete para eliminar puestos de control
 Lo mismo que con puntos de control pero con animales
 */
 
-
-app.post("/animal", (req, res) => {
-  const macAnimal = req.body?.macAnimal;
-  const tipoAnimal = req.body?.tipoAnimal;
-  const estado = req.body?.estado
+function postAnimal(request) {
+  const macAnimal = request.body?.macAnimal;
+  const tipoAnimal = request.body?.tipoAnimal;
+  const estado = request.body?.estado;
 
   //agregar mac
-  if (macAnimal!=undefined && 
-    tipoAnimal!=undefined &&
-    estado!=undefined && !(macAnimal in animales)){
-    const animal={
+  if (
+    macAnimal != undefined &&
+    tipoAnimal != undefined &&
+    estado != undefined &&
+    !(macAnimal in animales)
+  ) {
+    const animal = {
       macAnimal: macAnimal,
       tipoAnimal: tipoAnimal,
       estado: estado,
-    }
-    animales.set(macAnimal,animal)
-    return res.send(200);
+    };
+    animales.set(macAnimal, animal);
+    volcarADisco()
+      .then(() => {
+        res.send(200);
+      })
+      .catch((error) => {
+        res.writeHead(400, "Error al almacenar el valor modificado");
+      });
+    return;
   } else {
     //Faltan datos o el animal ya esta en la BD
-    res.writeHead(400, 'Error, el animal ya se encuentra en la BD o faltan datos')
-    res.end()
-    return
+    res.writeHead(
+      400,
+      "Error, el animal ya se encuentra en la BD o faltan datos"
+    );
+    res.end();
+    return;
   }
-});
+  datos_almacenadosJSON = JSON.stringify(datos_almacenados);
+}
 
-app.put("/animal", (req, res) => {
-  const macAnimal = req.body?.macAnimal;
-  const tipoAnimal = req.body?.tipoAnimal;
-  const estado = req.body?.estado
+function putAnimal(request) {
+  const macAnimal = request.body?.macAnimal;
+  const tipoAnimal = request.body?.tipoAnimal;
+  const estado = request.body?.estado;
   if (
-    macAnimal!=undefined && 
-    tipoAnimal!=undefined &&
-    estado!=undefined && macAnimal!=undefined && (macAnimal in animales)){
-
-    const animal={
+    macAnimal != undefined &&
+    tipoAnimal != undefined &&
+    estado != undefined &&
+    macAnimal != undefined &&
+    macAnimal in animales
+  ) {
+    const animal = {
       macAnimal: macAnimal,
       tipoAnimal: tipoAnimal,
       estado: estado,
-    }
-    animales.set(macAnimal,animal)
-    return res.send(200);
+    };
+    animales.set(macAnimal, animal);
+    volcarADisco()
+      .then(() => {
+        res.send(200);
+      })
+      .catch((error) => {
+        res.writeHead(400, "Error al almacenar el valor modificado");
+      });
+  } else {
+    res.writeHead(
+      400,
+      "Error,el animal no se encuentra en la BD o faltan datos"
+    );
+    res.end();
   }
-  else {
-    res.writeHead(400, 'Error,el animal no se encuentra en la BD o faltan datos')
-    res.end()
+}
+
+function deleteAnimal(request) {
+  const macAnimal = request.body?.macAnimal;
+  if (macAnimal != undefined && macAnimal in animales) {
+    animales.delete(macAnimal);
+    volcarADisco()
+      .then(() => {
+        res.send(200);
+      })
+      .catch((error) => {
+        res.writeHead(400, "Error al almacenar el valor modificado");
+      });
+    return;
+  } else {
+    res.writeHead(
+      400,
+      "Error,el animal no se encuentra en la BD o faltan datos"
+    );
+    res.end();
   }
-});
+}
 
-app.delete("/animal", (req, res) => {
-  const macAnimal = req.body?.macAnimal
-  if (macAnimal!=undefined && (macAnimal in animales)){
-    animales.delete(macAnimal)
-    return res.send(200);
-  }
-  else{
-    res.writeHead(400, 'Error,el animal no se encuentra en la BD o faltan datos')
-    res.end()
-  }
-
-
-});
-
-app.post("/checkpoint", (req, res) => {
-  const macCheckpoint = req.body?.macCheckpoint;
-  const nombreCheckpoint = req.body?.nombreCheckpoint
-  const estado = req.body?.estado
-  if (macCheckpoint!=undefined && nombreCheckpoint!=undefined && estado!=undefined && macCheckpoint!=undefined && !(macCheckpoint in puntosDeControl)){
-    
-    const animal={
+function postCheckpoint(request) {
+  const macCheckpoint = request.body?.macCheckpoint;
+  const nombreCheckpoint = request.body?.nombreCheckpoint;
+  const estado = request.body?.estado;
+  if (
+    macCheckpoint != undefined &&
+    nombreCheckpoint != undefined &&
+    estado != undefined &&
+    macCheckpoint != undefined &&
+    !(macCheckpoint in puntosDeControl)
+  ) {
+    const animal = {
       macCheckpoint: macCheckpoint,
-      nombreCheckpoint: nombreCheckpoint
-    }
-    puntosDeControl.set(macCheckpoint,animal)
-    //Si el estado es undefines
-    return res.send(200);
+      nombreCheckpoint: nombreCheckpoint,
+    };
+    puntosDeControl.set(macCheckpoint, animal);
+    volcarADisco()
+      .then(() => {
+        return 200, "Exito";
+      })
+      .catch((error) => {
+        return 400, "Error al almacenar el valor modificado";
+      });
+    return;
+  } else {
+    return 400, "Error, el checkpoint ya se encuentra en la BD o faltan datos";
   }
-  else {
-    res.writeHead(400, 'Error, el checkpoint ya se encuentra en la BD o faltan datos')
-    res.end()
-  }
-});
+}
 
-
-app.put("/checkpoint", (req, res) => {
-  const macCheckpoint = req.body?.macCheckpoint;
-  const nombreCheckpoint = req.body?.nombreCheckpoint 
-  const estado = req.body?.estado
-  if (macCheckpoint!=undefined && 
-    nombreCheckpoint!=undefined &&
-    estado!=undefined && 
-    macCheckpoint!=undefined && (macCheckpoint in puntosDeControl)){
-
-    const checkpoint={
+function putCheckpoint(request) {
+  const macCheckpoint = request.body?.macCheckpoint;
+  const nombreCheckpoint = request.body?.nombreCheckpoint;
+  const estado = request.body?.estado;
+  if (
+    macCheckpoint != undefined &&
+    nombreCheckpoint != undefined &&
+    estado != undefined &&
+    macCheckpoint != undefined &&
+    macCheckpoint in puntosDeControl
+  ) {
+    const checkpoint = {
       macCheckpoint: macCheckpoint,
-      nombreCheckpoint: nombreCheckpoint
-    }
-    puntosDeControl.set(macCheckpoint,checkpoint)
-    //Si el estado es undefines
-    return res.send(200);
+      nombreCheckpoint: nombreCheckpoint,
+    };
+    puntosDeControl.set(macCheckpoint, checkpoint);
+    volcarADisco()
+      .then(() => {
+        res.send(200);
+      })
+      .catch((error) => {
+        res.writeHead(400, "Error al almacenar el valor modificado");
+      });
+    return;
+  } else {
+    res.writeHead(
+      400,
+      "Error, el checkpoint no se encuentra en la BD o faltan datos"
+    );
+    res.end();
   }
-  else {
-    res.writeHead(400, 'Error, el checkpoint no se encuentra en la BD o faltan datos')
-    res.end()
-  }
-});
+}
 
-app.delete("/checkpoint", (req, res) => {
-  const macCheckpoint = req.body?.macCheckpoint
-  if (macCheckpoint!=undefined && (macCheckpoint in puntosDeControl)){
-    puntosDeControl.delete(macCheckpoint)
-    return res.send(200);
+function deleteCheckpoint(request) {
+  const macCheckpoint = request.body?.macCheckpoint;
+  if (macCheckpoint != undefined && macCheckpoint in puntosDeControl) {
+    puntosDeControl.delete(macCheckpoint);
+    volcarADisco()
+      .then(() => {
+        res.send(200);
+      })
+      .catch((error) => {
+        res.writeHead(400, "Error al almacenar el valor modificado");
+      });
+    return;
+  } else {
+    res.writeHead(
+      400,
+      "Error,el checkpoint no se encuentra en la BD o faltan datos"
+    );
+    res.end();
   }
-  else{
-    res.writeHead(400, 'Error,el checkpoint no se encuentra en la BD o faltan datos')
-    res.end()
-  }
-
-});
+}
 
 //------------
-mqttClient.on('connect', () => {
+mqttClient.on("connect", () => {
   mqttClient.subscribe(topico_checkpoints, (err) => {
-      if (err) {
-          console.error(err);
-      }
+    if (err) {
+      console.error(err);
+    }
   });
 });
 // Llamada en el bloque de verificación MQTT
@@ -180,17 +419,12 @@ mqttClient.on("message", (topic, message) => {
 
       if (
         typeof data?.controlPointMAC != undefined &&
-        typeof data?.devices != undefined &&
-        typeof data?.signalStrength != undefined
-      ) { 
+        typeof data?.devices != undefined
+      ) {
         console.log("Mensaje recibido y verificado:", data);
 
         // Guardar la ubicación del animal
-        guardarDatosAnimal(
-          data.controlPointId,
-          data.devices,
-          data.signalStrength
-        );
+        guardarDatosAnimal(data.controlPointMAC, data.devices);
       } else {
         console.error("Formato inválido en el mensaje MQTT recibido:", data);
       }
@@ -205,23 +439,51 @@ mqttClient.on("error", (err) => {
   console.error("Connection error:", err);
 });
 
-function guardarDatosAnimal(checkpointMAC,animalesCheckpointRAW){
-  animalesValidos=[]
-  animalesCheckpointRAW.forEach(animalCheckpoint => {
-    if (animalCheckpoint.intensidad_señal>=INTENSIDAD_UMBRAL){
-
-      if (animalCheckpoint.macAnimal in animales && animales[animalCheckpoint.macAnimal].estado=='activo')
-        animalesValidos.push(animales[macAnimal])
-
+function guardarDatosAnimal(checkpointMAC, animalesCheckpointRAW) {
+  animalesValidos = [];
+  animalesCheckpointRAW.forEach((animalCheckpoint) => {
+    if (animalCheckpoint.intensidad_señal >= INTENSIDAD_UMBRAL) {
+      // verifico intensidad
+      if (
+        animalCheckpoint.mac in animales &&
+        animales[animalCheckpoint.mac].estado == "activo"
+      )
+        //Luego si pertenece
+        animalesValidos.push(animales[mac]);
     }
   });
-  
-  if (checkpointMAC in puntosDeControl && puntosDeControl[checkpointMAC].estado=='activo'){
-    
-    seguimientoDinamico.set(checkpointMAC,animalesValidos)
 
+  if (
+    checkpointMAC in puntosDeControl &&
+    puntosDeControl[checkpointMAC].estado == "activo"
+  ) {
+    seguimientoDinamico.set(checkpointMAC, animalesValidos);
   }
 }
 
+function volcarADisco() {
+  datos_almacenadosJSON = JSON.stringify(datos_almacenados);
+  fs.writeFile("datos.json", datos_almacenadosJSON, (error) => {
+    // throwing the error
+    // in case of a writing problem
+    if (error) {
+      // logging the error
+      console.error(error);
+      throw error;
+    }
+  });
+}
 
+function volcarADisco() {
+  const datos_almacenadosJSON = JSON.stringify(datos_almacenados);
 
+  return new Promise((resolve, reject) => {
+    fs.writeFile("datos.json", datos_almacenadosJSON, (error) => {
+      if (error) {
+        reject(error); // Rechaza la promesa en caso de error
+      } else {
+        resolve(); // Resuelve la promesa si todo va bien
+      }
+    });
+  });
+}
