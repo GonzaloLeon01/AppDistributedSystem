@@ -1,8 +1,7 @@
 import mqtt from "mqtt";
-const fs = require("fs");
-const express = require("express");
-const app = express();
-const port = 3000;
+import fs from "fs";
+import http from "http";
+const PORT = 3000;
 const INTENSIDAD_UMBRAL = -30;
 //const mqttClient = connect("mqtt://localhost:1883");
 const mqttClient = mqtt.connect(process?.env?.MQTT_BROKER_URL);
@@ -21,13 +20,6 @@ const puntosDeControl = new Map();
  */
 const animales = new Map();
 
-/**
- * Estructura de datos para almacenar todo junto
- */
-const datos_almacenados = {
-  puntosDeControl: puntosDeControl,
-  animales: animales,
-};
 /***
  * Seguimiento dinamico es una estructura de datos que almacena de la forma
  * Punto de control1
@@ -39,7 +31,10 @@ const datos_almacenados = {
  *    -Animal4
  *    -Animal5
  */
-seguimientoDinamico = new Map();
+const seguimientoDinamico = new Map();
+
+// Carga los datos al inicio
+cargarDatos();
 
 const serverHttp = http.createServer((req, res) => {
   //Con http
@@ -90,7 +85,7 @@ const serverHttp = http.createServer((req, res) => {
           res.writeHead(201, { "Content-Type": "application/json" });
           res.end(
             JSON.stringify({
-              message: "Checkpoint agregado",
+              message: "Animal agregado",
               data: seguimientoDinamico,
             })
           );
@@ -118,7 +113,7 @@ const serverHttp = http.createServer((req, res) => {
           res.writeHead(201, { "Content-Type": "application/json" });
           res.end(
             JSON.stringify({
-              message: "Checkpoint agregado",
+              message: "Checkpoint modificado",
               data: seguimientoDinamico,
             })
           );
@@ -144,7 +139,7 @@ const serverHttp = http.createServer((req, res) => {
           res.writeHead(201, { "Content-Type": "application/json" });
           res.end(
             JSON.stringify({
-              message: "Checkpoint agregado",
+              message: "Animal modificado",
               data: seguimientoDinamico,
             })
           );
@@ -172,7 +167,7 @@ const serverHttp = http.createServer((req, res) => {
           res.writeHead(201, { "Content-Type": "application/json" });
           res.end(
             JSON.stringify({
-              message: "Checkpoint agregado",
+              message: "Checkpoint eliminado",
               data: seguimientoDinamico,
             })
           );
@@ -198,7 +193,7 @@ const serverHttp = http.createServer((req, res) => {
           res.writeHead(201, { "Content-Type": "application/json" });
           res.end(
             JSON.stringify({
-              message: "Checkpoint agregado",
+              message: "Animal eliminado",
               data: seguimientoDinamico,
             })
           );
@@ -215,7 +210,7 @@ const serverHttp = http.createServer((req, res) => {
 });
 
 serverHttp.listen(PORT, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`Example app listening on port ${PORT}`);
 });
 
 /*
@@ -462,23 +457,12 @@ function guardarDatosAnimal(checkpointMAC, animalesCheckpointRAW) {
 }
 
 function volcarADisco() {
-  datos_almacenadosJSON = JSON.stringify(datos_almacenados);
-  fs.writeFile("datos.json", datos_almacenadosJSON, (error) => {
-    // throwing the error
-    // in case of a writing problem
-    if (error) {
-      // logging the error
-      console.error(error);
-      throw error;
-    }
-  });
-}
-
-function volcarADisco() {
-  const datos_almacenadosJSON = JSON.stringify(datos_almacenados);
-
   return new Promise((resolve, reject) => {
-    fs.writeFile("datos.json", datos_almacenadosJSON, (error) => {
+    const datosParaGuardar = {
+      puntosDeControl: Array.from(puntosDeControl.entries()),
+      animales: Array.from(animales.entries()),
+    };
+    fs.writeFile(archivo_datos, JSON.stringify(datosParaGuardar), (error) => {
       if (error) {
         reject(error); // Rechaza la promesa en caso de error
       } else {
@@ -486,4 +470,19 @@ function volcarADisco() {
       }
     });
   });
+}
+
+// Cargar los datos desde JSON
+function cargarDatos() {
+  if (fs.existsSync(archivo_datos)) {
+    const datosCargados = JSON.parse(fs.readFileSync(archivo_datos));
+
+    datosCargados.puntosDeControl.forEach(([key, value]) => {
+      puntosDeControl.set(key, value);
+    });
+
+    datosCargados.animales.forEach(([key, value]) => {
+      animales.set(key, value);
+    });
+  }
 }
