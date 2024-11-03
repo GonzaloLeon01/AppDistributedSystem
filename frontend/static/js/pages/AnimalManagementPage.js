@@ -13,7 +13,39 @@ export default class AnimalManagementPage {
 
   async loadAnimals() {
     try {
-      const data = await AnimalsAPIHelper.getAnimals();
+      //const data = await AnimalsAPIHelper.getAnimals();
+      const data = [
+        {
+          id: "BT-0012345678",
+          name: "Bessie",
+          description: "Una vaca lechera holandesa con buen temperamento.",
+        },
+        {
+          id: "BT-0098765432",
+          name: "Bella",
+          description: "Vaca Jersey conocida por su alta producción de leche.",
+        },
+        {
+          id: "BT-0021354689",
+          name: "Max",
+          description: "Un toro Hereford fuerte y robusto.",
+        },
+        {
+          id: "BT-0054891324",
+          name: "Luna",
+          description: "Ternera Simmental curiosa y juguetona.",
+        },
+        {
+          id: "BT-0045687321",
+          name: "Rocky",
+          description: "Un buey Angus musculoso y confiable.",
+        },
+        {
+          id: "BT-0076543210",
+          name: "Daisy",
+          description: "Vaca Charolais amigable con excelente genética.",
+        },
+      ];
       this.animals = data.animals;
     } catch (error) {
       console.error("Error loading animals:", error);

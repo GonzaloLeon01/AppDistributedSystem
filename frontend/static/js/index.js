@@ -8,6 +8,7 @@ import Header from "./components/layouts/Header.js";
 //Funcion para navegar entre paginas
 export const navigateTo = (url) => {
   history.pushState({}, "", url);
+  console.log(url);
   loadPage();
 };
 

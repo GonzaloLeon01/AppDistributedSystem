@@ -12,7 +12,46 @@ export default class CheckpointManagementPage {
 
   async loadCheckpoints() {
     try {
-      const data = await CheckpointsAPIHelper.getCheckpoints();
+      //const data = await CheckpointsAPIHelper.getCheckpoints();
+      const data = [
+        {
+          id: "chk-1234abcd",
+          lat: -34.603722,
+          long: -58.381592,
+          description: "Punto de control cerca del establo principal.",
+        },
+        {
+          id: "chk-5678efgh",
+          lat: -34.610768,
+          long: -58.382452,
+          description: "Control en el área de pastoreo al norte.",
+        },
+        {
+          id: "chk-9012ijkl",
+          lat: -34.608301,
+          long: -58.387305,
+          description:
+            "Punto de control junto al río para el suministro de agua.",
+        },
+        {
+          id: "chk-3456mnop",
+          lat: -34.605102,
+          long: -58.385201,
+          description: "Punto de observación en la colina este.",
+        },
+        {
+          id: "chk-7890qrst",
+          lat: -34.60405,
+          long: -58.3881,
+          description: "Punto de control en el área de descanso al sur.",
+        },
+        {
+          id: "chk-1122uvwx",
+          lat: -34.6075,
+          long: -58.389,
+          description: "Punto de control para monitoreo de animales jóvenes.",
+        },
+      ];
       this.checkpoints = data;
     } catch (error) {
       console.error("Error loading checkpoints:", error);
