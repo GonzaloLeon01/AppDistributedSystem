@@ -2,73 +2,36 @@ import HomePage from "./pages/HomePage.js";
 import AnimalLocationPage from "./pages/AnimalLocationPage.js";
 import AnimalManagementPage from "./pages/AnimalManagementPage.js";
 import CheckpointManagementPage from "./pages/CheckpointManagementPage.js";
-import LoginPage from "./pages/LoginPage.js";
 import NotFoundPage from "./pages/NotFoundPage.js";
-import AuthStateHelper from "./helper/state/AuthStateHelper.js";
-import AuthLayout from "./components/layouts/AuthLayout.js";
-import LoggedInLayout from "./components/layouts/LoggedInLayout.js";
-import "./helper/api/AxiosRequestInterceptor.js";
+import Header from "./components/layouts/Header.js";
 
+//Funcion para navegar entre paginas
 export const navigateTo = (url) => {
   history.pushState({}, "", url);
   loadPage();
 };
 
-const route = (event) => {
-  event = event || window.event;
-  event.preventDefault();
-  const isAuth = !!AuthStateHelper.getAccessToken();
-  if (!isAuth && event.target.href !== "/login") {
-    navigateTo("/login");
-  } else {
-    navigateTo(event.target.href);
-  }
-};
-
-function loadLayout() {
-  const isAuth = !!AuthStateHelper.getAccessToken();
-  if (isAuth) {
-    new LoggedInLayout("container");
-  } else {
-    new AuthLayout("container");
-  }
-}
-
+//Funcion para manejar el enrutamiento y carga de la pagina
 function loadPage() {
-  loadLayout();
-  const isAuth = !!AuthStateHelper.getAccessToken();
+  // Cargar el header en el contenedor principal
+  new Header("header-container");
 
-  if (!isAuth) {
-    history.pushState({}, "", "/login");
-    return new LoginPage("layout-content");
-  }
-
-  // Cargar diferentes páginas según la ruta
-  switch (location.pathname) {
-    case "/":
-      new HomePage("layout-content");
-      break;
-    case "/animals/location":
-      new AnimalLocationPage("layout-content");
-      break;
-    case "/animals/manage":
-      new AnimalManagementPage("layout-content");
-      break;
-    case "/checkpoints/manage":
-      new CheckpointManagementPage("layout-content");
-      break;
-    case "/login":
-      new LoginPage("layout-content");
-      break;
-    default:
-      new NotFoundPage("layout-content");
-      break;
+  // Cargar la página según la ruta
+  const path = location.pathname;
+  if (path === "/") {
+    new HomePage("layout-content");
+  } else if (path === "/add-animal") {
+    new AnimalManagementPage("layout-content");
+  } else if (path === "/add-checkpoint") {
+    new CheckpointManagementPage("layout-content");
+  } else if (path === "/animal-location") {
+    new AnimalLocationPage("layout-content");
+  } else {
+    new NotFoundPage("layout-content");
   }
 }
 
-window.route = route;
-window.onpopstate = loadPage;
-
+// Manejador para enlaces de navegación
 document.addEventListener("DOMContentLoaded", () => {
   document.body.addEventListener("click", (e) => {
     if (e.target.matches("[data-link]")) {
@@ -76,5 +39,10 @@ document.addEventListener("DOMContentLoaded", () => {
       navigateTo(e.target.href);
     }
   });
+
+  // Cargar la primera página
   loadPage();
 });
+
+// Cargar la página correspondiente en eventos de navegación del historial
+window.onpopstate = loadPage;

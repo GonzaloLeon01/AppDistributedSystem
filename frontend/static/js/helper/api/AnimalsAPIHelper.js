@@ -1,6 +1,6 @@
-import axios from "axios";
+//import axios from "axios";
 
-const API_URL = "/API/animals"; // Cambia esto por la URL de tu API
+const API_URL = "/API/animals";
 
 export default class AnimalsAPIHelper {
   static async getAnimals() {
