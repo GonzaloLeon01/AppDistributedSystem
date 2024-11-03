@@ -85,6 +85,10 @@ class CheckpointController {
             }
         });
     }
+    async getCheckpointsData() {
+        const checkpoints = await checkpointRepository.getAll();
+        return checkpoints;
+    }
 
     validateCheckpoint(checkpoint) {
         return checkpoint.id && checkpoint.lat && checkpoint.long && checkpoint.description;

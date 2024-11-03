@@ -26,7 +26,6 @@ class UserController {
                     }));
                     return;
                 }
-
                 const user = await userRepository.verifyCredentials(
                     credentials.username, 
                     credentials.password
@@ -115,7 +114,7 @@ class UserController {
             }
         });
     }
-
+    
     generateAccessToken(user) {
         return jwt.sign(
             { username: user.username },

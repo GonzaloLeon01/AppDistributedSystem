@@ -1,8 +1,17 @@
 const fs = require('fs').promises;
 const path = require('path');
+const bcrypt = require('bcrypt');
 const adminFilePath = path.join(__dirname, '../models/admin.json');
 
 class UserRepository {
+    // Función para comparar la contraseña ingresada con el hash almacenado
+    async verifyPassword(password, hashedPassword) {
+        console.log(password);
+        console.log(hashedPassword);
+        const match = await bcrypt.compare(password, hashedPassword);
+        return match; // Retorna true si la contraseña coincide, false si no
+    }
+
     async getAll() {
         try {
             const data = await fs.readFile(adminFilePath);
@@ -17,10 +26,16 @@ class UserRepository {
         try {
             const users = await this.getAll();
             const user = users.find(u => 
-                u.username === username && 
-                u.password === password
+                u.username === username
             );
-            return user || null;
+            console.log(user);
+            const match=await this.verifyPassword(password,user.password);
+            if(match){
+                return user;
+            }
+            else{
+                return null;
+            }
         } catch (error) {
             throw new Error('Error al verificar credenciales');
         }
@@ -34,6 +49,7 @@ class UserRepository {
             throw new Error('Error al verificar usuario');
         }
     }
+
 }
 
 module.exports = new UserRepository();

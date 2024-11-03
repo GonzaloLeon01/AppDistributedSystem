@@ -89,6 +89,15 @@ class AnimalController {
     validateAnimal(animal) {
         return animal.id && animal.name && animal.description;
     }
+
+    async getAnimal(){
+        const animals = await animalRepository.getAll();    
+    }
+
+    async getAnimalsData() {
+        const animals = await animalRepository.getAll();
+        return animals;
+    }
 }
 
 module.exports = new AnimalController();

@@ -4,6 +4,7 @@ const { verifyToken } = require('./middleware/authMiddleware');
 const animalController = require('./controllers/animalController');
 const checkpointController = require('./controllers/checkpointController');
 const userController = require('./controllers/userController');
+const mqttController = require('./controllers/mqttController');
 
 const PORT = 3000;
 
@@ -69,12 +70,39 @@ const server = http.createServer(async (req, res) => {
 
 
     } else if (path === '/API/animals/position' && method === 'GET') {
-        // TODO: Implementar lógica para obtener posición de animales
-        res.writeHead(501, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ message: 'Not implemented yet' }));
-    } else {
-        res.writeHead(404, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'Ruta no encontrada' }));
+        let temporalcheck;
+        let temporalArray=[];
+        const animalData=await animalController.getAnimalsData();
+        const checkData=await checkpointController.getCheckpointsData();
+        const allChecks=mqttController.getAnimalsInAllCheckpoint(res);
+        allChecks.forEach(element => {
+            const index = checkData.findIndex(c=> c.id === element.checkpoint);   
+            if (index != -1){
+                temporalcheck={
+                    id: checkData[index].id,
+                    lat: checkData[index].lat,
+                    long: checkData[index].long,
+                    description: checkData[index].description || '', 
+                    animals: []
+                }
+                element.animals.forEach(animal => {
+                    const index2 = animalData.findIndex(c=> c.id === animal);    
+                    if (index2 != -1){
+                        temporalcheck.animals.push(animalData[index2]);  
+                    }
+                });
+                temporalArray.push(temporalcheck);
+            }
+        });
+        try{
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify(temporalArray));
+        } catch (error) {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Error al procesar el JSON' }));
+        }
+    }else if (path === '/API/availableDevices' && method === 'GET') {
+    const allChecks=mqttController.getAllCheckpoints(res);
     }
 });
 
