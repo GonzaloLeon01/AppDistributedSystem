@@ -3,10 +3,10 @@ import fs from "fs";
 import http from "http";
 const PORT = 3000;
 const INTENSIDAD_UMBRAL = -30;
-//const mqttClient = connect("mqtt://localhost:1883");
-const mqttClient = mqtt.connect(process?.env?.MQTT_BROKER_URL);
+const mqttClient = mqtt.connect("mqtt://localhost:1885");
+//const mqttClient = mqtt.connect(process?.env?.MQTT_BROKER_URL);
 
-const topico_checkpoints = "controlpoints";
+const topico_checkpoints = "checkpoint";
 const archivo_datos = "datos.json";
 /**
  * Estructura para almacenar puntos de control
@@ -409,7 +409,10 @@ mqttClient.on("connect", () => {
 // Llamada en el bloque de verificación MQTT
 mqttClient.on("message", (topic, message) => {
   if (topic === topico_checkpoints) {
-    try {
+    console.log(message);
+    console.log(message.toString());
+  }
+  /* try {
       const data = JSON.parse(message.toString());
 
       if (
@@ -428,6 +431,7 @@ mqttClient.on("message", (topic, message) => {
     }
   }
   //mqttClient.end(); para que sirve?
+  */
 });
 
 mqttClient.on("error", (err) => {
