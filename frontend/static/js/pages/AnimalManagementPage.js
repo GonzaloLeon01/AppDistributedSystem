@@ -1,7 +1,6 @@
 /*  Página para gestionar animales, incluyendo añadir, editar y eliminar animales */
 import AnimalItem from "../components/AnimalItem.js";
 import AnimalsAPIHelper from "../helper/api/AnimalsAPIHelper.js";
-import { navigateTo } from "../index.js";
 
 export default class AnimalManagementPage {
   constructor(selector) {
@@ -80,7 +79,7 @@ export default class AnimalManagementPage {
     if (name && description) {
       try {
         //await AnimalsAPIHelper.updateAnimal(id, { name, description });
-        alert("Animal actualizado con éxito");
+        //alert("Animal actualizado con éxito");
         //this.loadAnimals();
 
         const index = this.animals.findIndex((animal) => animal.id === id);
@@ -116,8 +115,9 @@ export default class AnimalManagementPage {
 
   render() {
     const formHtml = `
+      <h2 class="animal-management-title">Gestión de Animales</h2>
       <form id="animal-form" class="animal-form-container">
-        <h2 class="animal-form-title">Añadir nuevo animal</h2>
+        <h3 class="animal-form-title">Añadir nuevo animal</h3>
         <div class="input-container">
           <label for="id" class="input-label">ID:</label>
           <input type="text" id="id" name="id" class="input-field" required>
