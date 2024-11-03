@@ -1,9 +1,7 @@
 /*  Página para gestionar animales, incluyendo añadir, editar y eliminar animales */
-
-// AnimalManagementPage.js
-
 import AnimalItem from "../components/AnimalItem.js";
 import AnimalsAPIHelper from "../helper/api/AnimalsAPIHelper.js";
+import { navigateTo } from "../index.js";
 
 export default class AnimalManagementPage {
   constructor(selector) {
@@ -46,7 +44,7 @@ export default class AnimalManagementPage {
           description: "Vaca Charolais amigable con excelente genética.",
         },
       ];
-      this.animals = data.animals;
+      this.animals = data;
     } catch (error) {
       console.error("Error loading animals:", error);
       this.animals = [];
@@ -63,9 +61,12 @@ export default class AnimalManagementPage {
     const description = event.target.elements.description.value.trim();
 
     try {
-      await AnimalsAPIHelper.addAnimal({ id, name, description });
+      //await AnimalsAPIHelper.addAnimal({ id, name, description });
+      this.animals.push({ id, name, description });
       alert("Animal añadido con éxito");
-      this.loadAnimals();
+      //this.loadAnimals(); // esto si va
+      this.render(); // esto no va
+      this.addListeners(); // esto no va, es lo que hace que tire error
     } catch (error) {
       console.error("Error adding animal:", error);
       alert("Error al añadir el animal");
@@ -78,9 +79,18 @@ export default class AnimalManagementPage {
 
     if (name && description) {
       try {
-        await AnimalsAPIHelper.updateAnimal(id, { name, description });
+        //await AnimalsAPIHelper.updateAnimal(id, { name, description });
         alert("Animal actualizado con éxito");
-        this.loadAnimals();
+        //this.loadAnimals();
+
+        const index = this.animals.findIndex((animal) => animal.id === id);
+        if (index !== -1) {
+          this.animals[index].name = name;
+          this.animals[index].description = description;
+        }
+        alert("Animal actualizado con éxito");
+        this.render();
+        this.addListeners();
       } catch (error) {
         console.error("Error updating animal:", error);
         alert("Error al actualizar el animal");
@@ -91,9 +101,12 @@ export default class AnimalManagementPage {
   async handleDeleteAnimal(id) {
     if (confirm("¿Estás seguro de que deseas eliminar este animal?")) {
       try {
-        await AnimalsAPIHelper.deleteAnimal(id);
+        //await AnimalsAPIHelper.deleteAnimal(id);
+        this.animals = this.animals.filter((animal) => animal.id != id);
         alert("Animal eliminado con éxito");
-        this.loadAnimals();
+        this.render();
+        this.addListeners();
+        //this.loadAnimals();
       } catch (error) {
         console.error("Error deleting animal:", error);
         alert("Error al eliminar el animal");
