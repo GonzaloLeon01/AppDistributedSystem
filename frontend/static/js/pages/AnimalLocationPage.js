@@ -1,7 +1,5 @@
 /* Página para visualizar la ubicación de los animales */
 
-// AnimalLocationPage.js
-
 import AnimalsAPIHelper from "../helper/api/AnimalsAPIHelper.js";
 
 export default class AnimalLocationPage {
@@ -12,8 +10,8 @@ export default class AnimalLocationPage {
 
   async loadAnimalLocations() {
     try {
-      //const data = await AnimalsAPIHelper.getAnimalLocations();
-      // Mock data para la respuesta de animals/position
+      const data = await AnimalsAPIHelper.getAnimalsPosition();
+      /* Mock data para la respuesta de animals/position
       const data = [
         {
           id: "pos-001",
@@ -50,7 +48,7 @@ export default class AnimalLocationPage {
           description: "Corral de Animales Jóvenes",
           animals: ["Bovino-09", "Bovino-10"],
         },
-      ];
+      ]; */
 
       this.animalLocations = data;
     } catch (error) {

@@ -10,8 +10,8 @@ export default class CheckpointManagementPage {
 
   async loadCheckpoints() {
     try {
-      //const data = await CheckpointsAPIHelper.getCheckpoints();
-      const data = [
+      const data = await CheckpointsAPIHelper.getCheckpoints();
+      /* const data = [
         {
           id: "chk-1234abcd",
           lat: -34.603722,
@@ -49,7 +49,7 @@ export default class CheckpointManagementPage {
           long: -58.389,
           description: "Punto de control para monitoreo de animales jóvenes.",
         },
-      ];
+      ]; */
       this.checkpoints = data;
     } catch (error) {
       console.error("Error loading checkpoints:", error);
@@ -67,12 +67,12 @@ export default class CheckpointManagementPage {
     const description = event.target.elements.description.value.trim();
 
     try {
-      //await CheckpointsAPIHelper.addCheckpoint({ lat, long, description });
-      this.checkpoints.push({ lat, long, description });
+      await CheckpointsAPIHelper.addCheckpoint({ lat, long, description });
+      //this.checkpoints.push({ lat, long, description });
       alert("Punto de control agregado exitosamente");
-      //this.loadCheckpoints(); // esto si va
-      this.render(); // esto no va
-      this.addListeners(); // esto no va, es lo que hace que tire error
+      this.loadCheckpoints(); // esto si va
+      /*       this.render(); // esto no va
+      this.addListeners(); // esto no va, es lo que hace que tire error */
     } catch (error) {
       console.error("Error adding checkpoint:", error);
       alert("Error agregando punto de control");
@@ -85,22 +85,22 @@ export default class CheckpointManagementPage {
     const newDescription = prompt("Nueva descripción:", description);
 
     try {
-      /*       await CheckpointsAPIHelper.updateCheckpoint(id, {
+      await CheckpointsAPIHelper.updateCheckpoint(id, {
         lat: newLat,
         long: newLong,
         description: newDescription,
-      }); */
-      const index = this.checkpoints.findIndex((check) => check.id === id);
+      });
+      /*       const index = this.checkpoints.findIndex((check) => check.id === id);
       if (index !== -1) {
         this.checkpoints[index].lat = newLat;
         this.checkpoints[index].long = newLong;
         this.checkpoints[index].description = newDescription;
       }
-      console.log(index);
+      console.log(index); */
       alert("Punto de control actualizado exitosamente");
-      //this.loadCheckpoints(); // Recarga los checkpoints
-      this.render();
-      this.addListeners();
+      this.loadCheckpoints(); // Recarga los checkpoints
+      /*       this.render();
+      this.addListeners(); */
     } catch (error) {
       console.error("Error updating checkpoint:", error);
       alert("Error actualizando punto de control");
@@ -112,13 +112,13 @@ export default class CheckpointManagementPage {
       confirm("¿Estás seguro de que deseas eliminar este punto de control?")
     ) {
       try {
-        //await CheckpointsAPIHelper.deleteCheckpoint(id);
-        //alert("Punto de control eliminado exitosamente");
-        //this.loadCheckpoints(); // Recarga los checkpoints
-        this.checkpoints = this.checkpoints.filter((chek) => chek.id != id);
+        await CheckpointsAPIHelper.deleteCheckpoint(id);
+        alert("Punto de control eliminado exitosamente");
+        this.loadCheckpoints(); // Recarga los checkpoints
+        /*         this.checkpoints = this.checkpoints.filter((chek) => chek.id != id);
         alert("Punto de control eliminado con éxito");
         this.render();
-        this.addListeners();
+        this.addListeners(); */
       } catch (error) {
         console.error("Error deleting checkpoint:", error);
         alert("Error eliminando punto de control");
