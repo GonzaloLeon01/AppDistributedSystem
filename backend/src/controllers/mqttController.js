@@ -1,5 +1,11 @@
 const mqtt = require('mqtt');
-const client = mqtt.connect('mqtt://localhost:1883');
+const options = {
+    host:'localhost',
+    port: 1885,
+    username: 'api',
+    password: 'api'
+  };
+const client = mqtt.connect(options);
 
 // Estructura para almacenar los datos de los checkpoints y animales
 const animalTracker = new Map(); // Almacena la ultima ubicacion de cada animal
