@@ -28,7 +28,6 @@ const route = (event) => {
 function loadLayout() {
   const isAuth = !!AuthStateHelper.getAccessToken();
   if (isAuth) {
-      //new LoggedInLayout("container");
       new Header("header-container");
       return;
   }

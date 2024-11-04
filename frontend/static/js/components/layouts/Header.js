@@ -1,4 +1,6 @@
 import { navigateTo } from "../../index.js";
+import UserStateHelper from "../../helper/state/UserStateHelper.js";
+import AuthStateHelper from "../../helper/state/AuthStateHelper.js";
 
 export default class Header {
   constructor(selector) {
