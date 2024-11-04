@@ -31,7 +31,7 @@ class AnimalRepository {
         const index = animals.findIndex(animal => animal.id === id);
         if (index === -1) return null;
         
-        animals[index] = { ...animals[index], ...updatedAnimal };
+        animals[index] = { ...animals[index], ...updatedAnimal };   //todos los atributos que estaban y no aparecen quedan igual y se cambian los nuevos
         await fs.writeFile(animalsFilePath, JSON.stringify({ data: animals }));
         return animals[index];
     }
