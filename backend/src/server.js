@@ -7,20 +7,39 @@ const checkpointController = require('./controllers/checkpointController');
 const userController = require('./controllers/userController');
 const mqttController = require('./controllers/mqttController');
 
-const PORT = 4000;
+const PORT = 4000; // Asegúrate que este es el puerto correcto
 
 // Configuración de CORS
 const corsOptions = {
-    origin: ['http://localhost:3000'], // Ajusta esto según la URL de tu frontend
+    origin: [
+        'http://localhost:5500',  // Agregado tu origen
+        'http://127.0.0.1:5500',  // Alternativa común
+        'http://localhost:5173',
+        'http://127.0.0.1:5173'
+    ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true // Permite enviar cookies y headers de autenticación
+    credentials: true
 };
 
 // Función para manejar CORS
 function handleCors(req, res, callback) {
-    // Agregar headers de CORS
-    res.setHeader('Access-Control-Allow-Origin', corsOptions.origin);
+    // Obtener el origen de la solicitud
+    const origin = req.headers.origin;
+    
+    // Verificar si el origen está en la lista de permitidos
+    if (corsOptions.origin.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    } else {
+        // Si el origen no está en la lista, podrías:
+        // 1. Permitir todos los orígenes (no recomendado para producción)
+        // res.setHeader('Access-Control-Allow-Origin', '*');
+        // 2. O denegar la solicitud
+        res.writeHead(403);
+        res.end('Origen no permitido');
+        return;
+    }
+
     res.setHeader('Access-Control-Allow-Methods', corsOptions.methods.join(','));
     res.setHeader('Access-Control-Allow-Headers', corsOptions.allowedHeaders.join(','));
     res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -37,7 +56,6 @@ function handleCors(req, res, callback) {
 }
 
 const server = http.createServer(async (req, res) => {
-    // Aplicar CORS a todas las rutas
     handleCors(req, res, async () => {
         const parsedUrl = url.parse(req.url, true);
         const path = parsedUrl.pathname;
