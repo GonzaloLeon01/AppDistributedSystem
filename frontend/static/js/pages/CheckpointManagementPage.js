@@ -62,13 +62,13 @@ export default class CheckpointManagementPage {
 
   async handleAddCheckpoint(event) {
     event.preventDefault();
-    const uid = event.target.elements.uid.value.trim();
+    const id = event.target.elements.uid.value.trim();
     const lat = parseFloat(event.target.elements.lat.value);
     const long = parseFloat(event.target.elements.long.value);
     const description = event.target.elements.description.value.trim();
 
     try {
-      await CheckpointsAPIHelper.addCheckpoint({ uid, lat, long, description });
+      await CheckpointsAPIHelper.addCheckpoint({ id, lat, long, description });
       //this.checkpoints.push({ lat, long, description });
       alert("Punto de control agregado exitosamente");
       this.loadCheckpoints(); // esto si va
@@ -87,6 +87,7 @@ export default class CheckpointManagementPage {
 
     try {
       await CheckpointsAPIHelper.updateCheckpoint(id, {
+        id: id, //ilegal?
         lat: newLat,
         long: newLong,
         description: newDescription,
@@ -111,8 +112,10 @@ export default class CheckpointManagementPage {
   async handleDeleteCheckpoint(id) {
     if (
       confirm("¿Estás seguro de que deseas eliminar este punto de control?")
+      
     ) {
       try {
+        console.log(id);
         await CheckpointsAPIHelper.deleteCheckpoint(id);
         alert("Punto de control eliminado exitosamente");
         this.loadCheckpoints(); // Recarga los checkpoints
@@ -153,8 +156,8 @@ export default class CheckpointManagementPage {
       <div class="checkpoint-list">
         <h3 class="checkpoint-list-title"> Lista de Puntos de Control </h3>
         ${this.checkpoints
-          .map((checkpoint) => new CheckpointItem(checkpoint).render())
-          .join("")}
+        .map((checkpoint) => new CheckpointItem(checkpoint).render())
+        .join("")}
       </div>
     `;
     this.container.innerHTML = checkpointsHtml;

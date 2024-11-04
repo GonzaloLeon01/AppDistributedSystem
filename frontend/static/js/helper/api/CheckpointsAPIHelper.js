@@ -11,18 +11,19 @@ export default class CheckpointsAPIHelper {
 
   //API/checkpoints/
   static async addCheckpoint(checkpointData) {
-    const response = await axios.post(API_URL, checkpointData);
+    const response = await axios.post(API_URL, JSON.stringify(checkpointData));
     return response.data; // devuelve el punto de control creado
   }
 
   //API/checkpoints/:id
   static async updateCheckpoint(id, checkpointData) {
-    const response = await axios.patch(`${API_URL}/${id}`, checkpointData);
+    const response = await axios.patch(`${API_URL}/${id}`, JSON.stringify(checkpointData));
     return response.data; // devuelve el punto de control actualizado
   }
 
   //API/checkpoints/:id
   static async deleteCheckpoint(id) {
+    
     await axios.delete(`${API_URL}/${id}`);
   }
 }

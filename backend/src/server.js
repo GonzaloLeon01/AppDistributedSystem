@@ -63,7 +63,7 @@ const server = http.createServer(async (req, res) => {
     const parsedUrl = url.parse(req.url, true);
     const path = parsedUrl.pathname;
     const method = req.method;
-
+    console.log(`lo intenta al menos : ${parsedUrl} ${path} ${method}`);
     // Rutas públicas
     if (method === "GET" && path === "/") {
       res.writeHead(200, { "Content-Type": "text/plain" });
@@ -93,11 +93,11 @@ const server = http.createServer(async (req, res) => {
       case path === "/API/animals" && method === "POST":
         await animalController.createAnimal(req, res);
         break;
-      case path.match(/^\/API\/animals\/\d+$/) && method === "DELETE":
+      case path.match(/^\/API\/animals\/[^/]+$/) && method === "DELETE":
         const animalId = path.split("/").pop();
         await animalController.deleteAnimal(req, res, animalId);
         break;
-      case path.match(/^\/API\/animals\/\d+$/) && method === "PATCH":
+      case path.match(/^\/API\/animals\/[^/]+$/) && method === "PATCH":
         const updateId = path.split("/").pop();
         await animalController.updateAnimal(req, res, updateId);
         break;
@@ -107,12 +107,13 @@ const server = http.createServer(async (req, res) => {
       case path === "/API/checkpoints" && method === "POST":
         await checkpointController.createCheckpoint(req, res);
         break;
-      case path.match(/^\/API\/checkpoints\/\d+$/) && method === "DELETE":
+      case path.match(/^\/API\/checkpoints\/[^/]+$/) && method === "DELETE":
         const checkpointId = path.split("/").pop();
         await checkpointController.deleteCheckpoint(req, res, checkpointId);
         break;
-      case path.match(/^\/API\/checkpoints\/\d+$/) && method === "PATCH":
+      case path.match(/^\/API\/checkpoints\/[^/]+$/) && method === "PATCH":
         const checkUpdateId = path.split("/").pop();
+        console.log(`aver q pasa : ${checkUpdateId} `);
         await checkpointController.updateCheckpoint(req, res, checkUpdateId);
         break;
       case path === "/API/animals/position" && method === "GET":

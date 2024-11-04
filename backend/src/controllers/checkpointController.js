@@ -21,6 +21,7 @@ class CheckpointController {
 
         req.on('end', async () => {
             try {
+                console.log(body);
                 const newCheckpoint = JSON.parse(body);
                 if (!this.validateCheckpoint(newCheckpoint)) {
                     res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -40,7 +41,8 @@ class CheckpointController {
 
     async deleteCheckpoint(req, res, id) {
         try {
-            const deleted = await checkpointRepository.delete(parseInt(id));
+            console.log("intentando");
+            const deleted = await checkpointRepository.delete(id);
             if (!deleted) {
                 res.writeHead(404, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ error: 'Checkpoint no encontrado' }));
@@ -56,7 +58,7 @@ class CheckpointController {
 
     async updateCheckpoint(req, res, id) {
         let body = '';
-        
+
         req.on('data', chunk => {
             body += chunk.toString();
         });
@@ -64,13 +66,15 @@ class CheckpointController {
         req.on('end', async () => {
             try {
                 const updatedCheckpoint = JSON.parse(body);
+
+                console.log(updatedCheckpoint);
                 if (!this.validateCheckpoint(updatedCheckpoint)) {
                     res.writeHead(400, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({ error: 'Faltan campos requeridos' }));
                     return;
                 }
-
-                const result = await checkpointRepository.update(parseInt(id), updatedCheckpoint);
+                
+                const result = await checkpointRepository.update(id, updatedCheckpoint);
                 if (!result) {
                     res.writeHead(404, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({ error: 'Checkpoint no encontrado' }));
@@ -80,6 +84,7 @@ class CheckpointController {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify(result));
             } catch (error) {
+                
                 res.writeHead(400, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ error: 'Error al procesar el JSON' }));
             }

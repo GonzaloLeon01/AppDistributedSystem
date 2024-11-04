@@ -75,7 +75,7 @@ class AnimalController {
         }
 
         const result = await animalRepository.update(
-          parseInt(updatedAnimal.id),
+          id,
           updatedAnimal
         );
         if (!result) {
