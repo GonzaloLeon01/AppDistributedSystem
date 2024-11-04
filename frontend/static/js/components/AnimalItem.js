@@ -1,6 +1,6 @@
 export default class AnimalItem {
   constructor({ id, name, description }) {
-    this.id = id;
+    this.id = id; //BT COLLAR
     this.name = name;
     this.description = description;
   }
@@ -10,8 +10,8 @@ export default class AnimalItem {
       <div class="animal-item">
         <h4>${this.name}</h4>
         <p>${this.description}</p>
-        <button onclick="navigateTo('/edit-animal/${this.id}')">Editar</button>
-        <button onclick="deleteAnimal('${this.id}')">Eliminar</button>
+        <button id="edit-${this.id}">Editar</button>
+        <button id="delete-${this.id}">Eliminar</button>
       </div>
     `;
   }

@@ -29,6 +29,79 @@ export default class HomePage {
     const animals = AnimalsStateHelper.getAnimals(); // Obtiene los animales del estado
     const checkpoints = CheckpointsStateHelper.getCheckpoints(); // Obtiene los checkpoints del estado
 
+    /*  const animals = [
+      {
+        id: "BT-0012345678",
+        name: "Bessie",
+        description: "Una vaca lechera holandesa con buen temperamento.",
+      },
+      {
+        id: "BT-0098765432",
+        name: "Bella",
+        description: "Vaca Jersey conocida por su alta producción de leche.",
+      },
+      {
+        id: "BT-0021354689",
+        name: "Max",
+        description: "Un toro Hereford fuerte y robusto.",
+      },
+      {
+        id: "BT-0054891324",
+        name: "Luna",
+        description: "Ternera Simmental curiosa y juguetona.",
+      },
+      {
+        id: "BT-0045687321",
+        name: "Rocky",
+        description: "Un buey Angus musculoso y confiable.",
+      },
+      {
+        id: "BT-0076543210",
+        name: "Daisy",
+        description: "Vaca Charolais amigable con excelente genética.",
+      },
+    ];
+
+    const checkpoints = [
+      {
+        id: "chk-1234abcd",
+        lat: -34.603722,
+        long: -58.381592,
+        description: "Punto de control cerca del establo principal.",
+      },
+      {
+        id: "chk-5678efgh",
+        lat: -34.610768,
+        long: -58.382452,
+        description: "Control en el área de pastoreo al norte.",
+      },
+      {
+        id: "chk-9012ijkl",
+        lat: -34.608301,
+        long: -58.387305,
+        description:
+          "Punto de control junto al río para el suministro de agua.",
+      },
+      {
+        id: "chk-3456mnop",
+        lat: -34.605102,
+        long: -58.385201,
+        description: "Punto de observación en la colina este.",
+      },
+      {
+        id: "chk-7890qrst",
+        lat: -34.60405,
+        long: -58.3881,
+        description: "Punto de control en el área de descanso al sur.",
+      },
+      {
+        id: "chk-1122uvwx",
+        lat: -34.6075,
+        long: -58.389,
+        description: "Punto de control para monitoreo de animales jóvenes.",
+      },
+    ]; */
+
     let animalsHtml = `
       <h3 class="home-section-title">Animales</h3>
       <div class="home-animal-list">`;

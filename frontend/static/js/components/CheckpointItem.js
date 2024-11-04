@@ -11,8 +11,8 @@ export default class CheckpointItem {
       <div class="checkpoint-item">
         <h4>${this.description}</h4>
         <p>Latitud: ${this.lat}, Longitud: ${this.long}</p>
-        <button onclick="navigateTo('/edit-checkpoint/${this.id}')">Editar</button>
-        <button onclick="deleteCheckpoint('${this.id}')">Eliminar</button>
+        <button id="edit-${this.id}">Editar</button>
+        <button id="delete-${this.id}">Eliminar</button>
       </div>
     `;
   }
