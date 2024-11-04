@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 // URL de tu servidor HTTP
-const serverUrl = 'http://localhost:3000';//process.env.SERVER_URL; // Cambia esto según tu servidor
+const serverUrl = 'http://localhost:4000';//process.env.SERVER_URL; // Cambia esto según tu servidor
 
 async function checkServer() {
     checkAnimals();
@@ -85,6 +85,13 @@ async function checkCheckpoints(){
     }
 }
 async function checkUsuarios(){
+    try {
+        // Hacer una solicitud GET
+        const response = await axios.get(serverUrl + '/');//'/API/animals'
+        console.log('Respuesta GET:', response.data);
+    } catch (error) {
+        console.error('Error en la solicitud GET:', error.message);
+    }
     try {
         // Hacer una solicitud POST
         const credentials =

@@ -2,7 +2,7 @@
 
 const mqtt = require('mqtt');
 
-const brokerUrl = process.env.MQTT_BROKER_URL || 'mqtt://localhost:1883';
+const brokerUrl = process.env.MQTT_BROKER_URL || 'mqtt://localhost:1885';
 const topic = 'checkpoints';
 const options = {
     host:'localhost',
