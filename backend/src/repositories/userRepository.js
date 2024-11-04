@@ -29,15 +29,15 @@ class UserRepository {
                 u.username === username
             );
             console.log(user);
-            const match=await this.verifyPassword(password,user.password);
-            if(match){
-                return user;
+            if(user){
+                const match=await this.verifyPassword(password,user.password);
+                if(match){
+                    return user;
+                }
             }
-            else{
-                return null;
-            }
+            return null;
         } catch (error) {
-            throw new Error('Error al verificar credenciales');
+            throw new Error('Error al verificar credenciales',error);
         }
     }
 

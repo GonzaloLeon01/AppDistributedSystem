@@ -3,7 +3,14 @@ import fs from "fs";
 import http from "http";
 const PORT = 3000;
 const INTENSIDAD_UMBRAL = -30;
-const mqttClient = mqtt.connect("mqtt://localhost:1885");
+const options = {
+  host:'localhost',
+  port: 1885,
+  username: 'admin',
+  password: 'admin'
+};
+
+const mqttClient = mqtt.connect(options);
 //const mqttClient = mqtt.connect(process?.env?.MQTT_BROKER_URL);
 
 const topico_checkpoints = "checkpoint";
