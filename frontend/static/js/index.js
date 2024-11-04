@@ -7,8 +7,6 @@ import Header from "./components/layouts/Header.js";
 
 
 import AuthStateHelper from "./helper/state/AuthStateHelper.js";
-import AuthLayout from "./components/layouts/AuthLayout.js";//non eliminar despue
-import LoggedInLayout from "./components/layouts/LoggedInLayout.js";//non eliminar despue
 
 //Funcion para navegar entre paginas
 export const navigateTo = (url) => {
