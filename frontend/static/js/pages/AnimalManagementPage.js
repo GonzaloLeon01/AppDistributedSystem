@@ -12,6 +12,7 @@ export default class AnimalManagementPage {
   async loadAnimals() {
     try {
       const data = await AnimalsAPIHelper.getAnimals();
+      console.log("data=", data);
       /* const data = [
         {
           id: "BT-0012345678",
@@ -47,6 +48,7 @@ export default class AnimalManagementPage {
       this.animals = data;
       // Cargar dispositivos disponibles
       this.availableDevices = await AnimalsAPIHelper.getAvailableDevices();
+      console.log(this.availableDevices);
     } catch (error) {
       console.error("Error loading animals:", error);
       this.animals = [];

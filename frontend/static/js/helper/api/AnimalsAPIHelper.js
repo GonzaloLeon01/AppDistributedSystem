@@ -1,4 +1,4 @@
-const API_URL = "/API/animals";
+const API_URL = "http://localhost:4000/API/animals";
 
 export default class AnimalsAPIHelper {
   //API/animals/
