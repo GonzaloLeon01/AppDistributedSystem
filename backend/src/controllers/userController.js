@@ -18,7 +18,7 @@ class UserController {
         req.on('end', async () => {
             try {
                 const credentials = JSON.parse(body);
-                console.log(credentials);
+
                 if (!this.validateCredentials(credentials)) {
                     res.writeHead(400, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({ 
@@ -26,14 +26,14 @@ class UserController {
                     }));
                     return;
                 }
-                
+
                 const user = await userRepository.verifyCredentials(
                     credentials.username, 
                     credentials.password
                 );
 
                 if (user) {
-                    console.log("exito");
+
                     const accessToken = this.generateAccessToken(user);
                     const refreshToken = this.generateRefreshToken(user);
 
