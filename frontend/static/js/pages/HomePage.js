@@ -10,11 +10,10 @@ import CheckpointsStateHelper from "../helper/state/CheckpointsStateHelper.js"; 
 export default class HomePage {
   constructor(selector) {
     this.container = document.getElementById(selector);
-    this.render(); //harcodeado, sacar luego
-    //this.loadData(); // Carga los datos de animales y checkpoints
+    this.loadData(); // Carga los datos de animales y checkpoints
   }
 
-  /*   async loadData() {
+  async loadData() {
     try {
       const animalsData = await AnimalsAPIHelper.getAnimals(); // Obtiene los animales
       AnimalsStateHelper.setAnimals(animalsData.data.animals); // Almacena los animales en el estado
@@ -24,13 +23,13 @@ export default class HomePage {
     } catch (error) {
       console.error("Error al cargar los datos:", error); // Manejo de errores
     }
-  } */
+  }
 
   render() {
-    //const animals = AnimalsStateHelper.getAnimals(); // Obtiene los animales del estado
-    //const checkpoints = CheckpointsStateHelper.getCheckpoints(); // Obtiene los checkpoints del estado
+    const animals = AnimalsStateHelper.getAnimals(); // Obtiene los animales del estado
+    const checkpoints = CheckpointsStateHelper.getCheckpoints(); // Obtiene los checkpoints del estado
 
-    const animals = [
+    /*  const animals = [
       {
         id: "BT-0012345678",
         name: "Bessie",
@@ -101,7 +100,7 @@ export default class HomePage {
         long: -58.389,
         description: "Punto de control para monitoreo de animales jóvenes.",
       },
-    ];
+    ]; */
 
     let animalsHtml = `
       <h3 class="home-section-title">Animales</h3>
