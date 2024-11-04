@@ -62,12 +62,13 @@ export default class CheckpointManagementPage {
 
   async handleAddCheckpoint(event) {
     event.preventDefault();
+    const uid = event.target.elements.uid.value.trim();
     const lat = parseFloat(event.target.elements.lat.value);
     const long = parseFloat(event.target.elements.long.value);
     const description = event.target.elements.description.value.trim();
 
     try {
-      await CheckpointsAPIHelper.addCheckpoint({ lat, long, description });
+      await CheckpointsAPIHelper.addCheckpoint({ uid, lat, long, description });
       //this.checkpoints.push({ lat, long, description });
       alert("Punto de control agregado exitosamente");
       this.loadCheckpoints(); // esto si va
@@ -131,6 +132,10 @@ export default class CheckpointManagementPage {
       <h2 class="checkpoint-management-title">Gestión de Puntos de Control</h2>
       <form id="checkpoint-form" class="checkpoint-form-container">
         <h3 class="checkpoint-form-title">Agregar Nuevo Punto de Control</h3>
+        <div class="input-container">
+          <label for="uid" class="input-label">ID:</label>
+          <input class="input-field" type="text" id="uid" name="uid" required>
+        </div>
         <div class="input-container">
           <label for="lat" class="input-label">Latitud:</label>
           <input class="input-field" type="number" id="lat" name="lat" required>

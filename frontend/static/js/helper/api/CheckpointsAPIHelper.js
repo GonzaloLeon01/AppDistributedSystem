@@ -1,12 +1,12 @@
 /* import axios from "axios"; */
 
-const API_URL = "/API/checkpoints"; // Cambia esto por la URL de tu API
+const API_URL = "http://localhost:4000/API/checkpoints"; // Cambia esto por la URL de tu API
 
 export default class CheckpointsAPIHelper {
   //API/checkpoints/
   static async getCheckpoints() {
     const response = await axios.get(API_URL);
-    return response.data.checkpoints; // devuelve la lista de puntos de control
+    return response.data; // devuelve la lista de puntos de control
   }
 
   //API/checkpoints/
