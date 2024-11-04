@@ -1,49 +1,14 @@
 {
-    "data": [
-        {
-            "id": "557",
-            "name": "cccc",
-            "description": "cccc description"
-        },
-        {
-            "id": "11:22:33:44:55:01",
-            "name": "qqqqqqqq",
-            "description": "asrrrrs"
-        },
-        {
-            "id": "11:22:33:44:55:02",
-            "name": "cccc",
-            "description": "cccc description"
-        },
-        {
-            "id": "11:22:33:44:55:04",
-            "name": "qqqqqqqq",
-            "description": "asrrrrs"
-        },
-        {
-            "id": "11:22:33:44:55:03",
-            "name": "qqqqqqqq",
-            "description": "asrrrrs"
-        },
-        {
-            "id": "564",
-            "name": "gre",
-            "description": "rgt"
-        },
-        {
-            "id": "566",
-            "name": "efwrge",
-            "description": "ikuiku"
-        },
-        {
-            "id": "565",
-            "name": "rrrrrrrrrrrrrrrrrrr",
-            "description": "rererererere"
-        },
-        {
-            "id": "5655",
-            "name": "tytyytuuuuuuuu",
-            "description": "iiiiiiiiiiiii"
-        }
-    ]
+  "data": [
+    { "id": "11:22:33:44:55:01", "name": "qqqqqqqq", "description": "asrrrrs" },
+    {
+      "id": "11:22:33:44:55:02",
+      "name": "cccc",
+      "description": "cccc description"
+    },
+    { "id": "11:22:33:44:55:04", "name": "qqqqqqqq", "description": "asrrrrs" },
+    { "id": "11:22:33:44:55:03", "name": "qqqqqqqq", "description": "asrrrrs" },
+    { "id": "pepe", "name": "puma", "description": "12321313" },
+    { "id": "pepe", "name": "la cabra", "description": "messi" }
+  ]
 }

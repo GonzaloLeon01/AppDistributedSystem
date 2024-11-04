@@ -1,10 +1,11 @@
-const API_URL = "/API/animals";
+const API_URL = "http://localhost:4000/API/animals";
 
 export default class AnimalsAPIHelper {
   //API/animals/
   static async getAnimals() {
     const response = await axios.get(API_URL);
-    return response.data.animals; // devuelve la lista de animales
+    //return response.data.animals; // devuelve la lista de animales
+    return response.data;
   }
 
   //API/animals/
@@ -15,7 +16,10 @@ export default class AnimalsAPIHelper {
 
   //API/animals/:id
   static async updateAnimal(id, animalData) {
-    const response = await axios.patch(`${API_URL}/${id}`, animalData);
+    const response = await axios.patch(
+      `${API_URL}/${id}`,
+      JSON.stringify(animalData)
+    );
     return response.data; // devuelve el animal actualizado
   }
 

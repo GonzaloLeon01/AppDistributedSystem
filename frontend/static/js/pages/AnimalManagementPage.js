@@ -12,6 +12,7 @@ export default class AnimalManagementPage {
   async loadAnimals() {
     try {
       const data = await AnimalsAPIHelper.getAnimals();
+      console.log("data=", data);
       /* const data = [
         {
           id: "BT-0012345678",
@@ -46,12 +47,14 @@ export default class AnimalManagementPage {
       ]; */
       this.animals = data;
       // Cargar dispositivos disponibles
-      this.availableDevices = await AnimalsAPIHelper.getAvailableDevices();
+      //this.availableDevices = await AnimalsAPIHelper.getAvailableDevices();
+      console.log(this.availableDevices);
     } catch (error) {
       console.error("Error loading animals:", error);
       this.animals = [];
       this.availableDevices = [];
     } finally {
+      this.availableDevices = ["pepe"];
       this.render();
       this.addListeners();
     }
@@ -83,7 +86,8 @@ export default class AnimalManagementPage {
 
     if (name && description) {
       try {
-        await AnimalsAPIHelper.updateAnimal(id, { name, description });
+        console.log(id);
+        await AnimalsAPIHelper.updateAnimal(id, { id, name, description });
         alert("Animal actualizado con éxito");
         this.loadAnimals();
 
