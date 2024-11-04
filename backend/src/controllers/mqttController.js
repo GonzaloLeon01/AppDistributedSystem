@@ -145,8 +145,15 @@ function getAnimalsInAllCheckpoint() {
 
 function getAllCheckpoints(res) {
   try {
+    const allKeys = Array.from(checkpointData.values()).flatMap(value => {
+      if (value.animals instanceof Map) {
+          return Array.from(value.animals.keys());
+      }
+      return [];
+  });
+  
     res.writeHead(200, { "Content-Type": "application/json" });
-    res.end(JSON.stringify(Array.from(checkpointData.keys())));
+    res.end(JSON.stringify(allKeys));
   } catch (error) {
     res.writeHead(400, { "Content-Type": "application/json" });
     res.end(JSON.stringify({ error: "Error al procesar el JSON" }));

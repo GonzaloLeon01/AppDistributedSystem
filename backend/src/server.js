@@ -63,6 +63,7 @@ const server = http.createServer(async (req, res) => {
     const parsedUrl = url.parse(req.url, true);
     const path = parsedUrl.pathname;
     const method = req.method;
+    console.log(`Datos: ${parsedUrl} ${path} ${method}`);
     // Rutas públicas
     if (method === "GET" && path === "/") {
       res.writeHead(200, { "Content-Type": "text/plain" });
