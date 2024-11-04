@@ -83,7 +83,7 @@ export default class AnimalManagementPage {
   async handleEditAnimal(id) {
     const name = prompt("Nuevo nombre del animal:");
     const description = prompt("Nueva descripción del animal:");
-
+    console.log(id);
     if (name && description) {
       try {
         console.log(id);
@@ -109,6 +109,7 @@ export default class AnimalManagementPage {
   async handleDeleteAnimal(id) {
     if (confirm("¿Estás seguro de que deseas eliminar este animal?")) {
       try {
+        console.log(id);
         await AnimalsAPIHelper.deleteAnimal(id);
         /* this.animals = this.animals.filter((animal) => animal.id != id); */
         alert("Animal eliminado con éxito");

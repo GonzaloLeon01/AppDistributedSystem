@@ -95,6 +95,7 @@ const server = http.createServer(async (req, res) => {
         break;
       case path.match(/^\/API\/animals\/[^/]+$/) && method === "DELETE":
         const animalId = path.split("/").pop();
+        console.log(animalId);
         await animalController.deleteAnimal(req, res, animalId);
         break;
       case path.match(/^\/API\/animals\/[^/]+$/) && method === "PATCH":
