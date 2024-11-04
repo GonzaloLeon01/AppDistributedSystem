@@ -27,6 +27,12 @@ const route = (event) => {
 
 function loadLayout() {
   const isAuth = !!AuthStateHelper.getAccessToken();
+  const headerContainer = document.getElementById("header-container");
+
+  if (!isAuth && headerContainer) {
+    // Eliminar contenido del header cuando no hay autenticación
+    headerContainer.innerHTML = "";
+  }
   if (isAuth) {
       new Header("header-container");
       return;
