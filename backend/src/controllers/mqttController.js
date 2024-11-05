@@ -11,22 +11,21 @@ const client = mqtt.connect(options);
 const animalTracker = new Map(); // Almacena la ultima ubicacion de cada animal
 const checkpointData = new Map(); // Almacena los datos de cada checkpoint
 
-const topico_checkpoints = "checkpoint";
+const topic = "checkpoints";
 let isConnected = false;
 
 client.on("connect", () => {
   console.log("Conectado al broker MQTT");
   isConnected = true;
 
-  client.subscribe(topico_checkpoints, (err) => {
+  client.subscribe(topic, (err) => {
     if (!err) {
-      console.log(`Suscrito al topic: ${topico_checkpoints}`);
+      console.log(`Suscrito al topic: ${topic}`);
     } else {
       console.error("Error al suscribirse:", err);
     }
   });
 });
-
 // Estructura para almacenar fragmentos pendientes
 const fragmentBuffer = new Map();
 
@@ -134,7 +133,7 @@ function findBestCheckpoint(animalId, tempSignal) {
         bestCheckpoint = checkpointId;
       }
     } else {
-      const animalData = data.devices.get(animalId);
+      const animalData = data.animals.get(animalId);
       if (animalData && animalData.rssi > bestRSSI) {
         bestRSSI = animalData.rssi;
         bestCheckpoint = checkpointId;
@@ -182,8 +181,15 @@ function getAnimalsInAllCheckpoint() {
 
 function getAllCheckpoints(res) {
   try {
+    const allKeys = Array.from(checkpointData.values()).flatMap(value => {
+      if (value.animals instanceof Map) {
+          return Array.from(value.animals.keys());
+      }
+      return [];
+  });
+  
     res.writeHead(200, { "Content-Type": "application/json" });
-    res.end(JSON.stringify(Array.from(checkpointData.keys())));
+    res.end(JSON.stringify(allKeys));
   } catch (error) {
     res.writeHead(400, { "Content-Type": "application/json" });
     res.end(JSON.stringify({ error: "Error al procesar el JSON" }));
@@ -208,4 +214,3 @@ module.exports = {
   animalTracker,
   checkpointData,
 };
-
