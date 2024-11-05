@@ -82,12 +82,14 @@ void enviarPaquetes(PubSubClient& client,const std::vector<String>& devicesList,
   int batchSize = 3; // Send in batches of 10 devices
   int numBatches = (totalDevices + batchSize - 1) / batchSize;
   int iDevices=0;
+
   for (int i=0; i<numBatches; i++){ //Ciclo para cada paquete
     StaticJsonDocument<512> doc;
     String jsonString;
 
-    doc["deviceMac"]=WiFi.macAddress();
     doc["packageNum"]=i+1;
+    doc["totalPackages"]=numBatches;
+    doc["deviceMac"]=WiFi.macAddress();
 
     JsonArray devices = doc["devices"].to<JsonArray>();
     while (iDevices<batchSize*(i+1) && iDevices<totalDevices){ //Pone los dispositivos en el JSON
