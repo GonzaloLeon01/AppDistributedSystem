@@ -12,6 +12,9 @@ const char* password = "hola1234";
 const char* mqtt_server = "192.168.114.22";
 const int mqtt_port = 1885;
 
+const char* mqttUser = "admin";  // Usuario de Mosquitto
+const char* mqttPassword = "admin";  // Contraseña de Mosquitto
+
 WiFiClient espClient;
 PubSubClient client(espClient);
 
@@ -33,7 +36,7 @@ void setup() {
   client.setServer(mqtt_server, mqtt_port);
   while (!client.connected()) {
     Serial.println("Connecting to MQTT...");
-    if (client.connect("ESP32Client")) {
+    if (client.connect("ESP32Client", mqttUser, mqttPassword) {
       Serial.println("Connected to MQTT");
     } else {
       Serial.print("Failed with state ");
