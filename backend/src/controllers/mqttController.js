@@ -11,16 +11,16 @@ const client = mqtt.connect(options);
 const animalTracker = new Map(); // Almacena la ultima ubicacion de cada animal
 const checkpointData = new Map(); // Almacena los datos de cada checkpoint
 
-const topic = "checkpoints";
+const topico_checkpoints = "checkpoint";
 let isConnected = false;
 
 client.on("connect", () => {
   console.log("Conectado al broker MQTT");
   isConnected = true;
 
-  client.subscribe(topic, (err) => {
+  client.subscribe(topico_checkpoints, (err) => {
     if (!err) {
-      console.log(`Suscrito al topic: ${topic}`);
+      console.log(`Suscrito al topic: ${topico_checkpoints}`);
     } else {
       console.error("Error al suscribirse:", err);
     }
@@ -181,13 +181,13 @@ function getAnimalsInAllCheckpoint() {
 
 function getAllCheckpoints(res) {
   try {
-    const allKeys = Array.from(checkpointData.values()).flatMap(value => {
+    const allKeys = Array.from(checkpointData.values()).flatMap((value) => {
       if (value.animals instanceof Map) {
-          return Array.from(value.animals.keys());
+        return Array.from(value.animals.keys());
       }
       return [];
-  });
-  
+    });
+
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end(JSON.stringify(allKeys));
   } catch (error) {
