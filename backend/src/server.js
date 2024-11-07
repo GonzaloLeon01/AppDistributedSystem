@@ -65,6 +65,7 @@ const server = http.createServer(async (req, res) => {
     const method = req.method;
     console.log(`Datos: ${parsedUrl} ${path} ${method}`);
     // Rutas públicas
+
     if (method === "GET" && path === "/") {
       res.writeHead(200, { "Content-Type": "text/plain" });
       res.end("Backend!\n");
@@ -72,7 +73,6 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (path === "/API/login" && method === "POST") {
-
       await userController.login(req, res);
       return;
     }
@@ -82,9 +82,9 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
-    /*         if (!verifyToken(req, res)) {
-            return;
-        } */
+    if (!verifyToken(req, res)) {
+      return;
+    }
 
     // Rutas protegidas
     switch (true) {

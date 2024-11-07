@@ -48,15 +48,20 @@ export default class AnimalManagementPage {
       this.animals = data;
       // Cargar dispositivos disponibles
       this.availableDevices = await AnimalsAPIHelper.getAvailableDevices();
-      if(this.availableDevices != null)
-        this.availableDevices = this.availableDevices.filter(key => !data.some(item => item.id === key));
-      //faltaria filtrar por checkpoint valido :P 
+      if (this.availableDevices != null)
+        this.availableDevices = this.availableDevices.filter(
+          (key) => !data.some((item) => item.id === key)
+        );
+      //faltaria filtrar por checkpoint valido :P
     } catch (error) {
       console.error("Error loading animals:", error);
       this.animals = [];
       this.availableDevices = [];
     } finally {
-      if(this.availableDevices === null) this.availableDevices = ["NO hay dispositivos esto es pa q no crashee 💀💀"];
+      if (this.availableDevices === null)
+        this.availableDevices = [
+          "NO hay dispositivos esto es pa q no crashee 💀💀",
+        ];
       console.log("availableDevices=", this.availableDevices);
       this.render();
       this.addListeners();
