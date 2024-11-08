@@ -4,7 +4,6 @@ import { validateLogin } from "../helper/validations/authValidations.js";
 import UserStateHelper from "../helper/state/UserStateHelper.js";
 import AuthStateHelper from "../helper/state/AuthStateHelper.js";
 
-
 export default class LoginPage {
   constructor(selector) {
     this.container = document.getElementById(selector);
@@ -18,6 +17,7 @@ export default class LoginPage {
 
   async handleSubmit(event) {
     try {
+      console.log("login");
       event.preventDefault();
       const username = event.target.elements.id.value.trim();
       const password = event.target.elements.password.value.trim();
@@ -31,6 +31,7 @@ export default class LoginPage {
 
       window.removeEventListener("submit", this.handleSubmit);
     } catch (e) {
+      console.log(e);
       alert("Usuario o contraseña incorrectos");
     }
   }
