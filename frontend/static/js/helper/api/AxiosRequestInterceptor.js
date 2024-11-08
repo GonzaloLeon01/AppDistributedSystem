@@ -18,8 +18,8 @@ axios.interceptors.request.use(function (config) {
     }
 
     const newToken = AuthStateHelper.getAccessToken();
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+    if (newToken) {
+        config.headers.Authorization = `Bearer ${newToken}`;
     }
     return config;
 });
