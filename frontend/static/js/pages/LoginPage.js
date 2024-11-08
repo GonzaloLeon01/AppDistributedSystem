@@ -3,7 +3,7 @@ import AuthAPIHelper from "../helper/api/AuthAPIHelper.js";
 import { validateLogin } from "../helper/validations/authValidations.js";
 import UserStateHelper from "../helper/state/UserStateHelper.js";
 import AuthStateHelper from "../helper/state/AuthStateHelper.js";
-import { setupTokenRefresh } from "../index.js";
+
 
 export default class LoginPage {
   constructor(selector) {
@@ -33,7 +33,6 @@ export default class LoginPage {
     } catch (e) {
       alert("Usuario o contraseña incorrectos");
     }
-    setupTokenRefresh();
   }
 
   /*   addListener() {
