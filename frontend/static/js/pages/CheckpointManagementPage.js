@@ -144,7 +144,7 @@ export default class CheckpointManagementPage {
         </div>
         <div class="input-container">
           <label class="input-label" for="long">Longitud:</label>
-          <input type="number" id="long" name="long" required>
+          <input class="input-field" type="number" id="long" name="long" required>
         </div>
         <div class="input-container">
           <label for="description" class="input-label">Descripción:</label>
