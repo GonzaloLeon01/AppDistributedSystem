@@ -7,13 +7,13 @@
 #include <ArduinoJson.h>
 #include <vector>
 // Constants
-const char* ssid = "abc123";
-const char* password = "hola1234";
-const char* mqtt_server = "192.168.114.22";
+const char* ssid = "ClaroWiFi";
+const char* password = "ClaveDificil1$";
+const char* mqtt_server = "192.168.100.57";
 const int mqtt_port = 1885;
 
-const char* mqttUser = "admin";  // Usuario de Mosquitto
-const char* mqttPassword = "admin";  // Contraseña de Mosquitto
+const char* mqttUser = "checkpoint";  // Usuario de Mosquitto
+const char* mqttPassword = "checkpoint";  // Contraseña de Mosquitto
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -36,7 +36,7 @@ void setup() {
   client.setServer(mqtt_server, mqtt_port);
   while (!client.connected()) {
     Serial.println("Connecting to MQTT...");
-    if (client.connect("ESP32Client", mqttUser, mqttPassword) {
+    if (client.connect("ESP32Client", mqttUser, mqttPassword)){
       Serial.println("Connected to MQTT");
     } else {
       Serial.print("Failed with state ");
@@ -56,20 +56,20 @@ void loop() {
   Serial.println("Scanning for BLE devices...");
   BLEScanResults * foundDevices = pBLEScan->start(scanTime, false);
   std::vector<String> devicesList;
-  std::vector<String> devicesMACList;
+  std::vector<int> devicesRSSIList;
   // Loop through found devices
   for (int i = 0; i < foundDevices->getCount(); i++) {
 
       BLEAdvertisedDevice device = foundDevices->getDevice(i);
       String deviceString  = String(device.getAddress().toString().c_str());
-      String macString= String(device.getRSSI());
+      int rssiString= device.getRSSI();
       devicesList.push_back(deviceString);
-      devicesMACList.push_back(macString);
+      devicesRSSIList.push_back(rssiString);
     }
   
   pBLEScan->clearResults(); // Clear scan results
   // Publish the list of devices to the MQTT topic
-  enviarPaquetes(client,devicesList,devicesMACList);
+  enviarPaquetes(client,devicesList,devicesRSSIList);
 
   // Wait 10 seconds before next scan
 
@@ -77,7 +77,7 @@ void loop() {
 }
 
 
-void enviarPaquetes(PubSubClient& client,const std::vector<String>& devicesList,const std::vector<String>& devicesMACList){
+void enviarPaquetes(PubSubClient& client,const std::vector<String>& devicesList,const std::vector<int>& devicesRSSIList){
   int totalDevices = devicesList.size();
   int batchSize = 3; // Send in batches of 10 devices
   int numBatches = (totalDevices + batchSize - 1) / batchSize;
@@ -89,13 +89,13 @@ void enviarPaquetes(PubSubClient& client,const std::vector<String>& devicesList,
 
     doc["packageNum"]=i+1;
     doc["totalPackages"]=numBatches;
-    doc["deviceMac"]=WiFi.macAddress();
+    doc["checkpointID"]=WiFi.macAddress();
 
-    JsonArray devices = doc["devices"].to<JsonArray>();
+    JsonArray devices = doc["animals"].to<JsonArray>();
     while (iDevices<batchSize*(i+1) && iDevices<totalDevices){ //Pone los dispositivos en el JSON
       JsonObject deviceObj = devices.createNestedObject();
-      deviceObj["mac"]=devicesList[iDevices];
-      deviceObj["rssi"]=devicesMACList[iDevices];
+      deviceObj["id"]=devicesList[iDevices];
+      deviceObj["rssi"]=devicesRSSIList[iDevices];
       //devices.add(deviceObj);
       iDevices++;
     }
