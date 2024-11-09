@@ -73,7 +73,7 @@ void loop() {
 
   // Wait 10 seconds before next scan
 
-  delay(10000);
+  delay(1000);
 }
 
 
@@ -109,7 +109,7 @@ void enviarPaquetes(PubSubClient& client,const std::vector<String>& devicesList,
         Serial.println(devicesList[iAux]);
     } else {
       Serial.println("MQTT connection lost. Attempting to reconnect...");
-      if (client.connect("ESP32Client")) {
+       if (client.connect("ESP32Client", mqttUser, mqttPassword)){
         Serial.println("Reconnected to MQTT");
      }
   }
