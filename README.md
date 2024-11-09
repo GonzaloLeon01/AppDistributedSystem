@@ -17,8 +17,8 @@ Backend:
 
 Frontend:
 
--Axios, para requests HTTP.
--Vanilla JS, HTML y CSS
+- Axios, para requests HTTP.
+- Vanilla JS, HTML y CSS
 
 ## Instalacion
 ### Requisitos previos
