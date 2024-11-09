@@ -115,7 +115,7 @@ export default class AnimalLocationPage {
                   .map(
                     (animal) => `
                       <li>
-                        <p><strong>ID:</strong> ${animal.id}</p>
+                        <p><strong>MAC:</strong> ${animal.id}</p>
                         <p><strong>Nombre:</strong> ${animal.name}</p>
                         <p><strong>Descripción:</strong> ${animal.description}</p>
                       </li>
