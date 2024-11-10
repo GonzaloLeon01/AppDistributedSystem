@@ -8,7 +8,7 @@ const userController = require("./controllers/userController");
 const mqttController = require("./controllers/mqttController");
 const fs = require('fs');
 const path = require('path');
-const PORT = 4000; // Asegúrate que este es el puerto correcto
+require('dotenv').config();
 
 // Configuración de CORS
 const corsOptions = {
@@ -127,8 +127,8 @@ const server = http.createServer(async (req, res) => {
   });
 });
 
-server.listen(PORT, () => {
-  console.log(`Servidor HTTP escuchando en el puerto ${PORT}`);
+server.listen(process.env.PORTHTTP, () => {
+  console.log(`Servidor HTTP escuchando en el puerto ${process.env.PORTHTTP}`);
 });
 
 async function position(res) {

@@ -1,11 +1,21 @@
 const mqtt = require("mqtt");
 const options = {
-  host: "localhost",
-  port: 1885,
+  host: process.env.MQTTHOST,
+  port: process.env.MQTTPORT,
+  clientId: 'Backend',
   username: "api",
   password: "api",
 };
-const client = mqtt.connect(options);
+const fallbackOptions = {
+  host: 'test.mosquitto.org',  // Servidor de prueba de Mosquitto
+  port: 1883,
+};
+
+  const client = mqtt.connect(options);
+
+
+
+
 
 // Estructura para almacenar los datos de los checkpoints y animales
 const animalTracker = new Map(); // Almacena la ultima ubicacion de cada animal
@@ -30,8 +40,10 @@ client.on("connect", () => {
 const fragmentBuffer = new Map();
 
 client.on("message", (topic, message) => {
+
   if (topic === topico_checkpoints) {
     try {
+      console.log("eeeee correo: ",message);
       const data = JSON.parse(message.toString());
 
       // Verifica si el mensaje contiene fragmentos
