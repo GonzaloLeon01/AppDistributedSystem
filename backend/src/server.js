@@ -39,8 +39,8 @@ function handleCors(req, res, callback) {
     // 1. Permitir todos los orígenes (no recomendado para producción)
     // res.setHeader('Access-Control-Allow-Origin', '*');
     // 2. O denegar la solicitud
-    res.writeHead(403);
-    res.end("Origen no permitido");
+    res.writeHead(500);
+    res.end("Falla en el servidor");
     return;
   }
 
@@ -122,7 +122,7 @@ const server = http.createServer(async (req, res) => {
         break;
       default:
         res.writeHead(404);
-        res.end("Not Found");
+        res.end("Falla en encontrar una ruta/ el contenido solicitado");
     }
   });
 });
@@ -160,8 +160,8 @@ async function position(res) {
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end(JSON.stringify(temporalArray));
   } catch (error) {
-    res.writeHead(400, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({ error: "Error al procesar el JSON" }));
+    res.writeHead(500, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ error: "Falla en el servidor" }));
   }
 }
 

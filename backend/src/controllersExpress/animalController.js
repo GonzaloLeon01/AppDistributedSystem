@@ -1,0 +1,62 @@
+class AnimalController {
+    async getAnimals(req, res) {
+        try {
+            const animals = await animalRepository.getAll();
+            res.status(200).json(animals);
+        } catch (error) {
+            res.status(500).json({ error: 'Falla en el servidor' });
+        }
+    }
+
+    async createAnimal(req, res) {
+        try {
+            const newAnimal = req.body;
+            if (!this.validateAnimal(newAnimal)) {
+                return res.status(400).json({ error: 'Ausencia de datos para llevar a cabo una request' });
+            }
+
+            await animalRepository.create(newAnimal);
+            res.status(201).json({ message: 'Animal creado exitosamente' });
+        } catch (error) {
+            res.status(500).json({ error: 'Falla en el servidor' });
+        }
+    }
+
+    async deleteAnimal(req, res) {
+        try {
+            const deleted = await animalRepository.delete(req.params.id);
+            if (!deleted) {
+                return res.status(404).json({ error: 'Falla en encontrar una ruta/ el contenido solicitado' });
+            }
+            res.status(200).json({ message: 'Animal eliminado exitosamente' });
+        } catch (error) {
+            res.status(500).json({ error: 'Falla en el servidor' });
+        }
+    }
+
+    async updateAnimal(req, res) {
+        try {
+            const updatedAnimal = req.body;
+            if (!this.validateAnimal(updatedAnimal)) {
+                return res.status(400).json({ error: 'Ausencia de datos para llevar a cabo una request' });
+            }
+
+            const result = await animalRepository.update(req.params.id, updatedAnimal);
+            if (!result) {
+                return res.status(404).json({ error: 'Falla en encontrar una ruta/ el contenido solicitado' });
+            }
+
+            res.status(200).json(result);
+        } catch (error) {
+            res.status(500).json({ error: 'Falla en el servidor' });
+        }
+    }
+
+    validateAnimal(animal) {
+        return animal.id && animal.name && animal.description;
+    }
+
+    async getAnimalsData() {
+        return await animalRepository.getAll();
+    }
+}

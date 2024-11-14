@@ -23,7 +23,7 @@ class UserController {
           res.writeHead(400, { "Content-Type": "application/json" });
           res.end(
             JSON.stringify({
-              error: "Se requieren username y password",
+              error: "Ausencia de datos para llevar a cabo una request",
             })
           );
           return;
@@ -55,7 +55,7 @@ class UserController {
           res.writeHead(401, { "Content-Type": "application/json" });
           res.end(
             JSON.stringify({
-              error: "Credenciales inválidas",
+              error: "No existe el token, contraseña invalida",
             })
           );
         }
@@ -64,7 +64,7 @@ class UserController {
         res.writeHead(500, { "Content-Type": "application/json" });
         res.end(
           JSON.stringify({
-            error: "Error al procesar la solicitud de login",
+            error: "Falla en el servidor",
           })
         );
       }
@@ -84,14 +84,14 @@ class UserController {
 
         if (!refreshToken) {
           res.writeHead(400, { "Content-Type": "application/json" });
-          res.end(JSON.stringify({ error: "Refresh token required" }));
+          res.end(JSON.stringify({ error: "Ausencia de datos para llevar a cabo una request" }));
           return;
         }
 
         jwt.verify(refreshToken, refreshTokenSecret, async (err, decoded) => {
           if (err) {
             res.writeHead(403, { "Content-Type": "application/json" });
-            res.end(JSON.stringify({ error: "Invalid refresh token" }));
+            res.end(JSON.stringify({ error: "Token existente pero erróneo" }));
             return;
           }
 
@@ -101,8 +101,8 @@ class UserController {
             );
 
             if (!user) {
-              res.writeHead(403, { "Content-Type": "application/json" });
-              res.end(JSON.stringify({ error: "User not found" }));
+              res.writeHead(404, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ error: "Falla en encontrar una ruta/ el contenido solicitado" }));
               return;
             }
 
@@ -118,13 +118,13 @@ class UserController {
           } catch (error) {
             res.writeHead(500, { "Content-Type": "application/json" });
             res.end(
-              JSON.stringify({ error: "Error processing refresh token" })
+              JSON.stringify({ error: "Falla en el servidor" })
             );
           }
         });
       } catch (error) {
-        res.writeHead(400, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ error: "Invalid request" }));
+        res.writeHead(500, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "Falla en el servidor" }));
       }
     });
   }

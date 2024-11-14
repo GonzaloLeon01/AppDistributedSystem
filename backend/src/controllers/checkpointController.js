@@ -8,7 +8,7 @@ class CheckpointController {
             res.end(JSON.stringify(checkpoints));
         } catch (error) {
             res.writeHead(500, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ error: 'Error al obtener checkpoints' }));
+            res.end(JSON.stringify({ error: 'Falla en el servidor' }));
         }
     }
 
@@ -25,7 +25,7 @@ class CheckpointController {
                 const newCheckpoint = JSON.parse(body);
                 if (!this.validateCheckpoint(newCheckpoint)) {
                     res.writeHead(400, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ error: 'Faltan campos requeridos' }));
+                    res.end(JSON.stringify({ error: 'Ausencia de datos para llevar a cabo una request' }));
                     return;
                 }
 
@@ -33,8 +33,8 @@ class CheckpointController {
                 res.writeHead(201, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ message: 'Checkpoint creado exitosamente' }));
             } catch (error) {
-                res.writeHead(400, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ error: 'Error al procesar el JSON' }));
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: 'Falla en el servidor' }));
             }
         });
     }
@@ -45,14 +45,14 @@ class CheckpointController {
             const deleted = await checkpointRepository.delete(id);
             if (!deleted) {
                 res.writeHead(404, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ error: 'Checkpoint no encontrado' }));
+                res.end(JSON.stringify({ error: 'Falla en encontrar una ruta/ el contenido solicitado' }));
                 return;
             }
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ message: 'Checkpoint eliminado exitosamente' }));
         } catch (error) {
             res.writeHead(500, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ error: 'Error al eliminar checkpoint' }));
+            res.end(JSON.stringify({ error: 'Falla en el servidor' }));
         }
     }
 
@@ -70,14 +70,14 @@ class CheckpointController {
                 console.log(updatedCheckpoint);
                 if (!this.validateCheckpoint(updatedCheckpoint)) {
                     res.writeHead(400, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ error: 'Faltan campos requeridos' }));
+                    res.end(JSON.stringify({ error: 'Ausencia de datos para llevar a cabo una request ' }));
                     return;
                 }
                 
                 const result = await checkpointRepository.update(id, updatedCheckpoint);
                 if (!result) {
                     res.writeHead(404, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ error: 'Checkpoint no encontrado' }));
+                    res.end(JSON.stringify({ error: 'Falla en encontrar una ruta/ el contenido solicitado' }));
                     return;
                 }
 
@@ -85,8 +85,8 @@ class CheckpointController {
                 res.end(JSON.stringify(result));
             } catch (error) {
                 
-                res.writeHead(400, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ error: 'Error al procesar el JSON' }));
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: 'Falla en el servidor' }));
             }
         });
     }
