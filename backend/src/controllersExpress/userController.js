@@ -1,3 +1,5 @@
+const jwt = require("jsonwebtoken");
+const userRepository = require("../repositories/userRepository");
 class UserController {
     async login(req, res) {
         try {
@@ -76,3 +78,4 @@ class UserController {
         return credentials.username && credentials.password;
     }
 }
+module.exports = UserController;

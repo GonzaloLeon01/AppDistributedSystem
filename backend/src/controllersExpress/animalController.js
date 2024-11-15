@@ -1,9 +1,22 @@
+const animalRepository = require('../repositories/animalRepository'); 
+
 class AnimalController {
+    constructor() {
+        // Bind de los métodos al contexto de la clase
+        this.getAnimals = this.getAnimals.bind(this);
+        this.createAnimal = this.createAnimal.bind(this);
+        this.deleteAnimal = this.deleteAnimal.bind(this);
+        this.updateAnimal = this.updateAnimal.bind(this);
+        this.validateAnimal = this.validateAnimal.bind(this);
+        this.getAnimalsData = this.getAnimalsData.bind(this);
+    }
+
     async getAnimals(req, res) {
         try {
             const animals = await animalRepository.getAll();
             res.status(200).json(animals);
         } catch (error) {
+            console.error('Error in getAnimals:', error);
             res.status(500).json({ error: 'Falla en el servidor' });
         }
     }
@@ -18,6 +31,7 @@ class AnimalController {
             await animalRepository.create(newAnimal);
             res.status(201).json({ message: 'Animal creado exitosamente' });
         } catch (error) {
+            console.error('Error in createAnimal:', error);
             res.status(500).json({ error: 'Falla en el servidor' });
         }
     }
@@ -30,6 +44,7 @@ class AnimalController {
             }
             res.status(200).json({ message: 'Animal eliminado exitosamente' });
         } catch (error) {
+            console.error('Error in deleteAnimal:', error);
             res.status(500).json({ error: 'Falla en el servidor' });
         }
     }
@@ -48,6 +63,7 @@ class AnimalController {
 
             res.status(200).json(result);
         } catch (error) {
+            console.error('Error in updateAnimal:', error);
             res.status(500).json({ error: 'Falla en el servidor' });
         }
     }
@@ -57,6 +73,14 @@ class AnimalController {
     }
 
     async getAnimalsData() {
-        return await animalRepository.getAll();
+        try {
+            return await animalRepository.getAll();
+        } catch (error) {
+            console.error('Error in getAnimalsData:', error);
+            throw error;
+        }
     }
 }
+
+// Exportar la clase
+module.exports = AnimalController;

@@ -1,3 +1,4 @@
+const checkpointRepository = require('../repositories/checkpointRepository');
 class CheckpointController {
     async getCheckpoints(req, res) {
         try {
@@ -60,3 +61,4 @@ class CheckpointController {
         return checkpoint.id && checkpoint.lat && checkpoint.long && checkpoint.description;
     }
 }
+module.exports = CheckpointController;
